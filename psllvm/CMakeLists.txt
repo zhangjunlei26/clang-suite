@@ -86,7 +86,7 @@ set(LLVM_ENABLE_BACKTRACES OFF CACHE INTERNAL "")
 add_subdirectory(${PATH64_LLVM_SOURCE} ${CMAKE_CURRENT_BINARY_DIR}/__build)
 
 
-set(llvm_version "3.8.0")
+set(llvm_version "3.7.0")
 
 
 # psclang headers
