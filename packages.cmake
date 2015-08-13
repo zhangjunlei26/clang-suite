@@ -34,23 +34,11 @@ set(pack_desc "The PathScale EKOPath compiler suite is designed to generate code
 ########################################
 # Runtime package
 
-if(PATH64_ENABLE_HMPP OR PATH64_ENABLE_CUDA_ONLY)
-    set(gpu_arches "tahiti;hawaii;kaveri;kepler")
-
-    foreach(gm_arch ${gpu_arches})
-	path64_add_package_files(runtime lib/${PSC_FULL_VERSION}
-			  ${PATH64_STAGE_DIR}/lib/${PSC_FULL_VERSION}/gpu_math_${gm_arch}.bc
-			  )
-    endforeach()
-endif()
-
-
 foreach(targ ${PATH64_ENABLE_TARGETS})
     set(arch ${_PATH64_TARGET_ARCH_${targ}})
     set(bits ${_PATH64_TARGET_BITS_${targ}})
 
     set(dest_dir lib)
-    set(dest_dir_arch lib/${PSC_FULL_VERSION}/${arch})
 
     path64_add_package_files(runtime ${dest_dir}
                              ${PATH64_STAGE_DIR}/lib/libgcc${CMAKE_SHARED_LIBRARY_SUFFIX}
@@ -121,25 +109,6 @@ foreach(targ ${PATH64_ENABLE_TARGETS})
                                            libc++${CMAKE_SHARED_LIBRARY_SUFFIX})
             endif()
         endif()
-    endif()
-
-    if(PATH64_ENABLE_X86_HMPP)
-        path64_add_package_files(runtime ${dest_dir}
-                                 ${PATH64_STAGE_DIR}/lib/libdispatch${CMAKE_SHARED_LIBRARY_SUFFIX}
-                                 ${PATH64_STAGE_DIR}/lib/libkqueue${CMAKE_SHARED_LIBRARY_SUFFIX}
-                                )
-    endif()
-
-    if(PATH64_ENABLE_FORTRAN)
-        path64_add_package_files(runtime ${dest_dir} 
-                                 ${PATH64_STAGE_DIR}/lib/libpathfortran${CMAKE_SHARED_LIBRARY_SUFFIX}
-                                 ${PATH64_STAGE_DIR}/lib/libpathfortran-gnu${CMAKE_SHARED_LIBRARY_SUFFIX})
-    endif()
-
-    if(PATH64_ENABLE_AMP)
-        path64_add_package_files(runtime ${dest_dir}
-                                 ${PATH64_STAGE_DIR}/lib/libamp${CMAKE_SHARED_LIBRARY_SUFFIX}
-                                )
     endif()
 endforeach()
 
@@ -287,8 +256,8 @@ foreach(targ ${PATH64_ENABLE_TARGETS})
 endforeach()
 
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" AND PATH64_ENABLE_OPENMP)
-    path64_add_package_files(base include/${PSC_FULL_VERSION}
-                             ${PATH64_STAGE_DIR}/include/${PSC_FULL_VERSION}/omp.h)
+    path64_add_package_files(base include
+                             ${PATH64_STAGE_DIR}/include/omp.h)
 endif()
 
 
@@ -349,28 +318,14 @@ if(PATH64_ENABLE_CXX)
                             )
 
     if(PATH64_BUILD_STDCXX)
-        path64_add_package_files(c++ include/${PSC_FULL_VERSION}
-                                     ${PATH64_STAGE_DIR}/include/${PSC_FULL_VERSION}/stl
+        path64_add_package_files(c++ include
+                                     ${PATH64_STAGE_DIR}/include/stl
                                 )
     endif()
 
     if(PATH64_ENABLE_LIBCXX)
-        path64_add_package_files(c++ include/${PSC_FULL_VERSION}
-                                     ${PATH64_STAGE_DIR}/include/${PSC_FULL_VERSION}/libc++)
-    endif()
-
-    if(PATH64_ENABLE_HMPP OR PATH64_ENABLE_CUDA_ONLY)
-        if (NOT PATH64_ENABLE_HSA_ONLY)
-	        path64_add_package_files(c++ include/${PSC_FULL_VERSION}
-	                             ${PATH64_STAGE_DIR}/include/${PSC_FULL_VERSION}/thrust)
-        	path64_add_package_files(c++ include/${PSC_FULL_VERSION}
-	                             ${PATH64_STAGE_DIR}/include/${PSC_FULL_VERSION}/cusp)
-        endif()
-    endif()
-
-    if(PATH64_ENABLE_NVLBAS)
-        path64_add_package_files(c++ include/${PSC_FULL_VERSION}
-	                             ${PATH64_STAGE_DIR}/include/${PSC_FULL_VERSION}/cublas)
+        path64_add_package_files(c++ include
+                                     ${PATH64_STAGE_DIR}/include/c++)
     endif()
 
     foreach(targ ${PATH64_ENABLE_TARGETS})
@@ -410,99 +365,14 @@ endif()
 
 
 ########################################
-# fortran package
-
-path64_add_package_symlink(fortran ${PATH64_STAGE_DIR}/bin/pathf90${CMAKE_EXECUTABLE_SUFFIX}
-                                   pathcc${CMAKE_EXECUTABLE_SUFFIX} bin pathf90${CMAKE_EXECUTABLE_SUFFIX})
-path64_add_package_symlink(fortran ${PATH64_STAGE_DIR}/bin/pathf95${CMAKE_EXECUTABLE_SUFFIX}
-                                   pathcc${CMAKE_EXECUTABLE_SUFFIX} bin pathf95${CMAKE_EXECUTABLE_SUFFIX})
-path64_add_package_symlink(fortran ${PATH64_STAGE_DIR}/bin/pathf90-${PSC_FULL_VERSION}
-                                   pathcc${CMAKE_EXECUTABLE_SUFFIX} bin pathf90-${PSC_FULL_VERSION}${CMAKE_EXECUTABLE_SUFFIX})
-path64_add_package_symlink(fortran ${PATH64_STAGE_DIR}/bin/pathf95-${PSC_FULL_VERSION}${CMAKE_EXECUTABLE_SUFFIX}
-                                   pathcc${CMAKE_EXECUTABLE_SUFFIX} bin pathf95-${PSC_FULL_VERSION}${CMAKE_EXECUTABLE_SUFFIX})
-
-path64_add_package_files(fortran bin
-                         ${PATH64_STAGE_DIR}/bin/assign${CMAKE_EXECUTABLE_SUFFIX}
-                         ${PATH64_COMPILER_SOURCE}/src/tools/explain/explain${CMAKE_EXECUTABLE_SUFFIX}
-                        )
-
-path64_add_package_files(fortran lib/${PSC_FULL_VERSION}
-                         ${CMAKE_CURRENT_BINARY_DIR}/Xcompiler/src/arith/arith.cat
-                         ${CMAKE_CURRENT_BINARY_DIR}/Xcompiler/src/arith/arith.msgs
-                         ${PATH64_COMPILER_SOURCE}/src/tools/explain/tmac.sg
-                         ${PATH64_STAGE_DIR}/lib/${PSC_FULL_VERSION}/cf95.cat
-                         ${PATH64_STAGE_DIR}/lib/${PSC_FULL_VERSION}/cf95.msgs
-                         ${CMAKE_CURRENT_BINARY_DIR}/Xcompiler/src/libpathfortran/lib.cat
-                         ${CMAKE_CURRENT_BINARY_DIR}/Xcompiler/src/libpathfortran/lib.msgs)
-path64_add_package_symlink(fortran ${PATH64_STAGE_DIR}/lib/${PSC_FULL_VERSION}/pathf95.msgs cf95.msgs lib/${PSC_FULL_VERSION} pathf95.msgs)
-if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" AND PATH64_ENABLE_OPENMP)
-    path64_add_package_files(fortran include/${PSC_FULL_VERSION}
-                             ${PATH64_COMPILER_SOURCE}/src/include/omp/omp_lib.f)
-endif()
-
-foreach(arch ${PATH64_ENABLE_ARCHES})
-    path64_add_package_files(fortran lib/${PSC_FULL_VERSION}/${arch}
-                             ${PATH64_STAGE_DIR}/lib/mfef95${CMAKE_EXECUTABLE_SUFFIX})
-#                             ${PATH64_STAGE_DIR}/lib/coco${CMAKE_EXECUTABLE_SUFFIX})
-endforeach()
-
-foreach(targ ${PATH64_ENABLE_TARGETS})
-    set(arch ${_PATH64_TARGET_ARCH_${targ}})
-    set(bits ${_PATH64_TARGET_BITS_${targ}})
-
-    path64_add_package_files(fortran lib
-        ${PATH64_STAGE_DIR}/lib/libpathfstart.a
-        ${PATH64_STAGE_DIR}/lib/libpathfortran.a
-        ${PATH64_STAGE_DIR}/lib/libpathfortran-gnu.a
-        ${CMAKE_CURRENT_BINARY_DIR}/Xcompiler/src/libpathfortran/pathfortran-${targ}/IEEE_EXCEPTIONS.mod
-        ${CMAKE_CURRENT_BINARY_DIR}/Xcompiler/src/libpathfortran/pathfortran-${targ}/ISO_FORTRAN_ENV.mod
-        ${CMAKE_CURRENT_BINARY_DIR}/Xcompiler/src/libpathfortran/pathfortran-${targ}/IEEE_FEATURES.mod
-        ${CMAKE_CURRENT_BINARY_DIR}/Xcompiler/src/libpathfortran/pathfortran-${targ}/ISO_C_BINDING.mod
-        ${CMAKE_CURRENT_BINARY_DIR}/Xcompiler/src/libpathfortran/pathfortran-${targ}/IEEE_ARITHMETIC.mod
-    )
-    if(PATH64_ENABLE_HMPP)
-        if (NOT PATH64_ENABLE_HSA_ONLY)
-        	path64_add_package_files(fortran lib
-			${CMAKE_CURRENT_BINARY_DIR}/Xcompiler/src/libpathfortran/pathfortran-${targ}/OPENACC.mod )
-        endif()
-    endif()
-
-    if(PATH64_ENABLE_OPENMP)
-        path64_add_package_files(fortran lib
-                                 ${PATH64_STAGE_DIR}/lib/OMP_LIB.mod)
-    endif()
-
-endforeach()
-
-path64_set_package_deps(fortran "base" "runtime")
-if(PATH64_ENABLE_FORTRAN)
-    path64_add_package(fortran
-                       "${PSC_FULL_VERSION}"
-                       "${pack_arch}"
-                       "${pack_maint}"
-                       "${pack_sect}"
-                       "${pack_group}"
-                       "${pack_prio}"
-                       "${pack_homepage}"
-                       "PathScale(tm) EKOPath Compiler Suite Fortran compiler"
-                       "${pack_desc}"
-                       "Fortran compiler"
-                       TRUE
-                       TRUE
-                       TRUE)
-endif()
-
-
-
-########################################
 
 if(PATH64_ENABLE_PATHAS AND NOT PATH64_ENABLE_DEFAULT_PATHAS)
     path64_set_package_deps(assembler "runtime")
 
     foreach(targ ${PATH64_ENABLE_TARGETS})
         set(arch ${_PATH64_TARGET_ARCH_${targ}})
-        set(dest_dir lib/${PSC_FULL_VERSION}/${arch})
-        set(src_dir ${PATH64_STAGE_DIR}/lib/${PSC_FULL_VERSION}/${arch})
+        set(dest_dir lib)
+        set(src_dir ${PATH64_STAGE_DIR}/lib)
 
         path64_add_package_files(assembler ${dest_dir} ${src_dir}/pathas2${CMAKE_EXECUTABLE_SUFFIX})
     endforeach()
@@ -678,35 +548,6 @@ if(PATH64_ENABLE_RLM)
 endif()
 
 
-########################################
-# pathopt2 package
-
-path64_add_package_files(pathopt2 bin
-                         ${PATH64_STAGE_DIR}/bin/pathopt${CMAKE_EXECUTABLE_SUFFIX}
-                        )
-path64_add_package_files(pathopt2 share
-                         ${PATH64_STAGE_DIR}/share/debug.xml
-                         ${PATH64_STAGE_DIR}/share/pathopt2-mips.xml
-                         ${PATH64_STAGE_DIR}/share/pathopt2.xml
-                         ${PATH64_STAGE_DIR}/share/examples
-                        )
-path64_set_package_deps(pathopt2 "runtime")
-if(PATH64_ENABLE_PATHOPT2)
-    path64_add_package(pathopt2
-                       "${PSC_FULL_VERSION}"
-                       "${pack_arch}"
-                       "${pack_maint}"
-                       "${pack_sect}"
-                       "${pack_group}"
-                       "${pack_prio}"
-                       "${pack_homepage}"
-                       "PathScale(tm) EKOPath Compiler Suite Optimizer"
-                       "${pack_desc}"
-                       "pathopt2"
-                       TRUE
-                       TRUE
-                       TRUE)
-endif()
 
 
 ########################################
@@ -743,7 +584,7 @@ if(PATH64_ENABLE_PSCBLAS)
 
     set(pscblas_include "${PSCBLAS_ROOT}/include")
     
-    path64_add_package_files(pscblas "include/${PSC_FULL_VERSION}/pscblas"
+    path64_add_package_files(pscblas "include/pscblas"
                              "${pscblas_include}/cblas.h"
                              "${pscblas_include}/f77blas.h"
                              "${pscblas_include}/lapacke_config.h"
