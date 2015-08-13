@@ -312,7 +312,7 @@ if(PATH64_ENABLE_SHARED)
     path64_set_multitarget_sources(unwind aarch64 ${libunwind_sources_common}
                                                     ${libunwind_sources_aarch64})
 
-    path64_set_multitarget_property_(unwind COMPILE_FLAGS "-fPIC -fexceptions ${no_fast_stdlib}")
+    path64_set_multitarget_property_(unwind COMPILE_FLAGS "-fPIC -fexceptions ${no_fast_stdlib} -std=gnu89")
     path64_set_multitarget_property_for_target(unwind x86_64 COMPILE_FLAGS
             "-I${PATH64_LIBUNWIND_SOURCE}/include/tdep-x86_64 ${anyx86}")
     path64_set_multitarget_property_for_target(unwind x86_32 COMPILE_FLAGS
