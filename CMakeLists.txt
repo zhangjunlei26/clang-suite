@@ -7,6 +7,11 @@ endif()
 
 INCLUDE(CheckCXXCompilerFlag)
 
+# Whatever arbitrary number you'd like in 3 string format eg 3.9.99
+IF(NOT PSC_FULL_VERSION)
+    SET(PSC_FULL_VERSION "6.0.9" CACHE STRING "Defaulting to version 6.0.9")
+ENDIF()
+
 option(PATH64_ENABLE_CXX "Enables C++" ON)
 option(PATH64_ENABLE_OPENMP "Enable OpenMP" ON)
 option(PATH64_USE_SYSTEM_LIBCXX "Use system libc++" OFF)
@@ -333,5 +338,5 @@ foreach(comp ${components})
     endif()
 endforeach()
 
-#include(packages.cmake)
+include(packages.cmake)
 

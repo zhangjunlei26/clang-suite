@@ -1,0 +1,172 @@
+<project>
+    <shortName>@MAIN_PACKAGE_NAME@</shortName>
+    <fullName>PathScale ENZO</fullName>
+    <version>@PSC_FULL_VERSION@</version>
+    <enableRollback>1</enableRollback>
+    <enableTimestamp>1</enableTimestamp>
+    <vendor>PathScale</vendor>
+    <outputDirectory>.</outputDirectory>
+    <installerFilename>@INSTALLER_FILE_NAME@</installerFilename>
+    <allowComponentSelection>@INSTALL_TYPE_INSTALL@</allowComponentSelection>
+    <installationType>@INSTALL_TYPE@</installationType>
+
+    <registerWithPackageDatabase>1</registerWithPackageDatabase>
+    <summary>PathScale(tm) EKOPath Compiler Suite</summary>
+    <release>0</release>
+    <description>The PathScale EKOPath compiler suite is designed to generate code for Intel64 and AMD64 processors. The EKOPath environment provides the developer with necessary tools and options to develop highly optimized C, C++, and Fortran applications.</description>
+
+    <componentList>
+@PATH64_COMPONENTS@
+    </componentList>
+
+    <parameterList>
+
+        <directoryParameter>
+            <name>installdir</name>
+            <description>Installer.Parameter.installdir.description</description>
+            <explanation>Installer.Parameter.installdir.explanation</explanation>
+            <value></value>
+            <default>${platform_install_prefix}/${product_shortname}-${product_version}</default>
+            <allowEmptyValue>0</allowEmptyValue>
+            <cliOptionName>prefix</cliOptionName>
+            <mustBeWritable>yes</mustBeWritable>
+            <mustExist>0</mustExist>
+            <width>30</width>
+
+            <!-- checking existing installation for upgrade installer -->
+            <validationActionList>
+                <actionGroup>
+                    <actionList>
+                        <setInstallerVariable name="errmsg">
+                            <value>Can not find existing ${project.fullName} installation in selected directory</value>
+                        </setInstallerVariable>
+                        <throwError>
+                            <text>${errmsg}</text>
+                            <ruleList>
+                                <fileExists negate="1">
+                                    <path>${installdir}/enzo_components</path>
+                                </fileExists>
+                            </ruleList>
+                        </throwError>
+
+                        <!-- reading list of components -->
+                        <readFile>
+                            <path>${installdir}/enzo_components</path>
+                            <name>enzo_components</name>
+                        </readFile>
+
+                        <foreach variables="comp" values="${enzo_components}">
+                            <actionList>
+                                <setInstallerVariable name="project.component(${comp}).selected" value="1"/>
+                            </actionList>
+                        </foreach>
+
+                    </actionList>
+                    <ruleList>
+                        <isTrue value="@INSTALL_TYPE_UPGRADE@"/>
+                    </ruleList>
+                </actionGroup>
+            </validationActionList>
+        </directoryParameter>
+
+
+        <!-- PathScale subscription file -->
+        <fileParameter>
+            <ask>@INSTALL_TYPE_INSTALL@</ask>
+            <name>licensefile</name>
+            <description>PathScale subscription license</description>
+            <explanation>
+                Please specify the location of the PathScale subscription file
+            </explanation>
+            <mustExist>1</mustExist>
+            <ruleEvaluationLogic>and</ruleEvaluationLogic>
+            <ruleList>
+                <compareText>
+                    <text>${project.installationType}</text>
+                    <logic>equals</logic>
+                    <value>normal</value>
+                </compareText>
+            </ruleList>
+            <allowEmptyValue>@OPTIONAL_LICENSE_FILE@</allowEmptyValue>
+        </fileParameter>
+
+        <!-- skip-install-check option -->
+        <booleanParameter>
+            <ask>0</ask>
+            <name>skip_install_check</name>
+            <cliOptionName>skip-install-check</cliOptionName>
+            <title>Skip auto configuration after install</title>
+            <default>0</default>
+        </booleanParameter>
+    </parameterList>
+
+    <preInstallationActionList>
+        <!-- deselecting all components for upgrade -->
+        <actionGroup>
+            <actionList>
+                <foreach variables="comp" values="@PATH64_COMPONENT_LIST@">
+                    <actionList>
+                        <setInstallerVariable name="project.component(${comp}).selected" value="0"/>
+                    </actionList>
+                </foreach>
+            </actionList>
+            <ruleList>
+                <isTrue value="@INSTALL_TYPE_UPGRADE@"/>
+            </ruleList>
+        </actionGroup>
+    </preInstallationActionList>
+
+    <postInstallationActionList>
+        <actionGroup>
+            <actionList>
+                <!-- Copying subscription file to home directory -->
+                <if>
+                    <conditionRuleList>
+                        <compareTextLength logic="greater">
+                            <text>${licensefile}</text>
+                            <length>0</length>
+                        </compareTextLength>
+                    </conditionRuleList>
+                    <actionList>
+                        <copyFile>
+                            <origin>${licensefile}</origin>
+                            <destination>${installdir}/bin</destination>
+                        </copyFile>
+                    </actionList>
+                </if>
+
+                <!-- Writing list of components -->
+                <setInstallerVariable name="enzo_components" value=""/>
+                <foreach variables="comp" values="@PATH64_COMPONENT_LIST@">
+                    <actionList>
+                        <actionGroup>
+                            <actionList>
+                                <setInstallerVariable name="enzo_components" value="${enzo_components} ${comp}"/>
+                            </actionList>
+                            <ruleList>
+                                <isTrue value="${project.component(${comp}).selected}"/>
+                            </ruleList>
+                        </actionGroup>
+                    </actionList>
+                </foreach>
+                <writeFile>
+                    <path>${installdir}/enzo_components</path>
+                    <text>${enzo_components}</text>
+                </writeFile>
+                <addFilesToUninstaller>
+                    <files>${installdir}/enzo_components</files>
+                </addFilesToUninstaller>
+
+                @POST_INSTALL_ACTION_LIST@
+            </actionList>
+            <ruleList>
+                <isTrue value="@INSTALL_TYPE_INSTALL@"/>
+            </ruleList>
+        </actionGroup>
+    </postInstallationActionList>
+
+    <readyToInstallActionList>
+        @READY_TO_INSTALL_ACTION_LIST@
+    </readyToInstallActionList>
+</project>
+
