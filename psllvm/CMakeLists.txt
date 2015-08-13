@@ -16,7 +16,7 @@ function(make_symlink_custom_command dir target output)
     endif()
 
     add_custom_command(OUTPUT "${output}"
-                       DEPENDS "${target}"
+                       DEPENDS "${dir}/${target}"
                        COMMAND "${CMAKE_COMMAND}" -E "${LINK_COPY}" "${target_path}" "${output}")
 endfunction()
 
@@ -83,6 +83,8 @@ endif()
 set(LLVM_TARGETS_TO_BUILD "${llvm_targets}"
     CACHE INTERNAL "Semicolon-separated list of targets to build, or \"all\".")
 set(LLVM_ENABLE_BACKTRACES OFF CACHE INTERNAL "")
+option(LLVM_INCLUDE_EXAMPLES "Enable LLVM examples" OFF)
+option(LLVM_INCLUDE_TESTS "Enable LLVM tests" OFF)
 add_subdirectory(${PATH64_LLVM_SOURCE} ${CMAKE_CURRENT_BINARY_DIR}/__build)
 
 
