@@ -125,7 +125,7 @@ endif()
 set(headers "omp.h")
 
 set(openmp_stage_headers)
-set(openmp_stage_include_dir "${PATH64_STAGE_DIR}/include/${PSC_FULL_VERSION}")
+set(openmp_stage_include_dir "${PATH64_STAGE_DIR}/include")
 
 foreach(header ${headers})
     set(stage_header "${openmp_stage_include_dir}/${header}")

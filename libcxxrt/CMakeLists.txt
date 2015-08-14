@@ -1,12 +1,12 @@
 
 
 # copying cxxabi.h header to stage dir
-add_custom_command(OUTPUT ${PATH64_STAGE_DIR}/include/${PSC_FULL_VERSION}/cxxabi.h
+add_custom_command(OUTPUT ${PATH64_STAGE_DIR}/include/cxxabi.h
                    COMMAND ${CMAKE_COMMAND} -E copy
                            ${CMAKE_CURRENT_SOURCE_DIR}/cxxabi.h
-                           ${PATH64_STAGE_DIR}/include/${PSC_FULL_VERSION}/cxxabi.h
+                           ${PATH64_STAGE_DIR}/include/cxxabi.h
                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/cxxabi.h)
-add_custom_target(cxxabi-h-stage DEPENDS ${PATH64_STAGE_DIR}/include/${PSC_FULL_VERSION}/cxxabi.h)
+add_custom_target(cxxabi-h-stage DEPENDS ${PATH64_STAGE_DIR}/include/cxxabi.h)
 add_dependencies(compiler-stage-libs-CXX cxxabi-h-stage)
 
 
@@ -52,6 +52,6 @@ if(PATH64_ENABLE_SHARED)
     path64_add_dependencies_from_multitarget(compiler-stage-libs-CXX cxxrt)
 endif()
 
-install(FILES ${PATH64_STAGE_DIR}/include/${PSC_FULL_VERSION}/cxxabi.h
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PSC_FULL_VERSION})
+install(FILES ${PATH64_STAGE_DIR}/include/cxxabi.h
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
