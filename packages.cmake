@@ -40,8 +40,8 @@ foreach(targ ${PATH64_ENABLE_TARGETS})
 
     set(dest_dir lib)
 
-    path64_add_package_files(runtime ${dest_dir}
-                             ${PATH64_STAGE_DIR}/lib/libgcc${CMAKE_SHARED_LIBRARY_SUFFIX}
+    path64_add_package_files(runtime ${dest_dir}/clang/${CLANG_FULL_VERSION}/lib/linux
+                             ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/linux/libclang_rt.builtins-${targ}${CMAKE_SHARED_LIBRARY_SUFFIX}
 			     )
 
     if(PATH64_ENABLE_CXX AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
