@@ -488,7 +488,13 @@ function(path64_add_library_for_target name target type src_base_path)
     # Compiler ABI.
     set(arch ${_PATH64_TARGET_ARCH_${target}})
     set(bits ${_PATH64_TARGET_BITS_${target}})
-    set(build_lib_dir ${Path64_BINARY_DIR}/lib)
+
+    set(build_lib_dir "${path64_multitarget_property_${name}_OUTPUT_DIRECTORY}")
+    if("${build_lib_dir}" STREQUAL "")
+        set(build_lib_dir ${Path64_BINARY_DIR}/lib)
+    endif()
+
+    make_directory("${build_lib_dir}")
     set(install_lib_dir lib)
 
     # Replacing @TARGET@ with target name in source names
