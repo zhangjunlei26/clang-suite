@@ -7,6 +7,9 @@ endif()
 
 INCLUDE(CheckCXXCompilerFlag)
 
+# TODO: detect clang version from sources
+set(CLANG_FULL_VERSION "3.7.0")
+
 # Whatever arbitrary number you'd like in 3 string format eg 3.9.99
 IF(NOT PSC_FULL_VERSION)
     SET(PSC_FULL_VERSION "6.0.9" CACHE STRING "Defaulting to version 6.0.9")
