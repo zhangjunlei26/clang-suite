@@ -36,6 +36,7 @@ function(build_libcxx targ shared)
     list(APPEND cmd_line "-DCMAKE_CXX_COMPILER=${Path64_BINARY_DIR}/bin/clang++")
     list(APPEND cmd_line "-DLIBCXX_CXX_ABI=libcxxrt")
     list(APPEND cmd_line "-DLIBCXX_CXX_ABI_INCLUDE_PATHS=${PATH64_LIBCXXRT_SOURCE}/src")
+    list(APPEND cmd_line "-DLLVM_CONFIG=OFF")
 
     # select static/shared
     if(NOT shared)
