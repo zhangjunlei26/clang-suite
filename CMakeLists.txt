@@ -293,7 +293,13 @@ if("${CMAKE_C_COMPILER_ID}" STREQUAL "PathScale")
     set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} ${cxx_flags}")
     set(CMAKE_CXX_CREATE_SHARED_LIBRARY "${CMAKE_CXX_CREATE_SHARED_LIBRARY} ${cxx_flags}")
 
-    set(linker_flags "-Wl,-s -fbootstrap-hack")
+    if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+	# -Wl,-s is obsolete on OSX, supposedly ignored but causes internal linker error
+	# http://bugs.pathscale.com/browse/COMPILER-9736
+	set(linker_flags "-fbootstrap-hack")
+    else()
+	set(linker_flags "-Wl,-s -fbootstrap-hack")
+    endif()
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} ${linker_flags}")
     set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} ${linker_flags}")
     set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} ${linker_flags}")
