@@ -63,6 +63,7 @@ function(build_libcxx targ shared)
     add_custom_target(libcxx-cmake-${target_suffix}
                       COMMAND ${cmd_line} "-DCMAKE_C_FLAGS:STRING=${c_flags_str} -nodefaultlibs -lc"
                                           "-DCMAKE_CXX_FLAGS:STRING:=${cxx_flags_str} -nodefaultlibs -lc"
+                                          "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
                       WORKING_DIRECTORY "${build_dir}")
     add_dependencies(libcxx-cmake-${target_suffix} compiler-stage-CXX)
     path64_add_dependencies_from_multitarget(libcxx-cmake-${target_suffix} cxxrt)
