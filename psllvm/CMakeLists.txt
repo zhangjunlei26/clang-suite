@@ -91,16 +91,13 @@ set(CLANG_DEFAULT_RTLIB "compiler-rt")
 add_subdirectory(${PATH64_LLVM_SOURCE} ${CMAKE_CURRENT_BINARY_DIR}/__build)
 
 
-set(llvm_version "3.7.0")
-
-
 # psclang headers
 file(GLOB_RECURSE headers
      RELATIVE "${PATH64_LLVM_SOURCE}/tools/clang/lib/Headers"
      "${PATH64_LLVM_SOURCE}/tools/clang/lib/Headers/*")
 
 set(psclang_stage_headers)
-set(psclang_stage_include_dir "${PATH64_STAGE_DIR}/lib/clang/${llvm_version}/include")
+set(psclang_stage_include_dir "${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/include")
 
 foreach(header ${headers})
     set(stage_header "${psclang_stage_include_dir}/${header}")
