@@ -85,6 +85,8 @@ set(LLVM_TARGETS_TO_BUILD "${llvm_targets}"
 set(LLVM_ENABLE_BACKTRACES OFF CACHE INTERNAL "")
 option(LLVM_INCLUDE_EXAMPLES "Enable LLVM examples" OFF)
 option(LLVM_INCLUDE_TESTS "Enable LLVM tests" OFF)
+option(LLVM_BUILD_TOOLS "Build the LLVM tools. If OFF, just generate build targets." OFF)
+option(LLVM_BUILD_UTILS "Build LLVM utility binaries. If OFF, just generate build targets." OFF)
 set(CLANG_CXX_ABI "libcxxrt")
 set(CLANG_DEFAULT_CXX_STDLIB "libc++")
 set(CLANG_DEFAULT_RTLIB "compiler-rt")
