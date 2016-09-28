@@ -87,6 +87,9 @@ option(LLVM_INCLUDE_EXAMPLES "Enable LLVM examples" OFF)
 option(LLVM_INCLUDE_TESTS "Enable LLVM tests" OFF)
 option(LLVM_BUILD_TOOLS "Build the LLVM tools. If OFF, just generate build targets." OFF)
 option(LLVM_BUILD_UTILS "Build LLVM utility binaries. If OFF, just generate build targets." OFF)
+option(CLANG_BUILD_TOOLS "Build the Clang tools. If OFF, just generate build targets." OFF)
+option(CLANG_ENABLE_ARCMT "Build ARCMT." OFF)
+option(CLANG_ENABLE_STATIC_ANALYZER "Build static analyzer." OFF)
 set(CLANG_DEFAULT_CXX_STDLIB "libc++" CACHE STRING
   "Default C++ stdlib to use (\"libstdc++\" or \"libc++\", empty for platform default")
 set(CLANG_DEFAULT_RTLIB "compiler-rt" CACHE STRING
