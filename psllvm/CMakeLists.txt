@@ -87,9 +87,10 @@ option(LLVM_INCLUDE_EXAMPLES "Enable LLVM examples" OFF)
 option(LLVM_INCLUDE_TESTS "Enable LLVM tests" OFF)
 option(LLVM_BUILD_TOOLS "Build the LLVM tools. If OFF, just generate build targets." OFF)
 option(LLVM_BUILD_UTILS "Build LLVM utility binaries. If OFF, just generate build targets." OFF)
-set(CLANG_CXX_ABI "libcxxrt")
-set(CLANG_DEFAULT_CXX_STDLIB "libc++")
-set(CLANG_DEFAULT_RTLIB "compiler-rt")
+set(CLANG_DEFAULT_CXX_STDLIB "libc++" CACHE STRING
+  "Default C++ stdlib to use (\"libstdc++\" or \"libc++\", empty for platform default")
+set(CLANG_DEFAULT_RTLIB "compiler-rt" CACHE STRING
+  "Default runtime library to use (\"libgcc\" or \"compiler-rt\", empty for platform default)")
 add_subdirectory(${PATH64_LLVM_SOURCE} ${CMAKE_CURRENT_BINARY_DIR}/__build)
 
 
