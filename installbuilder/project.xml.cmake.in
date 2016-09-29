@@ -1,6 +1,6 @@
 <project>
     <shortName>@MAIN_PACKAGE_NAME@</shortName>
-    <fullName>PathScale ENZO</fullName>
+    <fullName>PathScale clang-suite</fullName>
     <version>@PSC_FULL_VERSION@</version>
     <enableRollback>1</enableRollback>
     <enableTimestamp>1</enableTimestamp>
@@ -11,9 +11,9 @@
     <installationType>@INSTALL_TYPE@</installationType>
 
     <registerWithPackageDatabase>1</registerWithPackageDatabase>
-    <summary>PathScale(tm) EKOPath Compiler Suite</summary>
+	<summary>PathScale(tm) Clang Compiler Suite</summary>
     <release>0</release>
-    <description>The PathScale EKOPath compiler suite is designed to generate code for Intel64 and AMD64 processors. The EKOPath environment provides the developer with necessary tools and options to develop highly optimized C, C++, and Fortran applications.</description>
+	<description>The PathScale Clang compiler suite provides pre-built packages of the open-source clang compiler.</description>
 
     <componentList>
 @PATH64_COMPONENTS@
