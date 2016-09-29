@@ -21,6 +21,21 @@
 
     <parameterList>
 
+        <licenseParameter>
+            <ask>@INSTALL_TYPE_INSTALL@</ask>
+            <name>license1</name>
+            <fileEncoding>utf-8</fileEncoding>
+            <wrapText>1</wrapText>
+			<file>@CMAKE_CURRENT_SOURCE_DIR@/ekopath/psllvm/LICENSE.txt</file>
+            <ruleList>
+                <compareText>
+                    <text>${project.installationtype}</text>
+                    <logic>equals</logic>
+                    <value>normal</value>
+                </compareText>
+            </ruleList>
+        </licenseParameter>
+
         <directoryParameter>
             <name>installdir</name>
             <description>Installer.Parameter.installdir.description</description>
