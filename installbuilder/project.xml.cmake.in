@@ -68,36 +68,6 @@
                 </actionGroup>
             </validationActionList>
         </directoryParameter>
-
-
-        <!-- PathScale subscription file -->
-        <fileParameter>
-            <ask>@INSTALL_TYPE_INSTALL@</ask>
-            <name>licensefile</name>
-            <description>PathScale subscription license</description>
-            <explanation>
-                Please specify the location of the PathScale subscription file
-            </explanation>
-            <mustExist>1</mustExist>
-            <ruleEvaluationLogic>and</ruleEvaluationLogic>
-            <ruleList>
-                <compareText>
-                    <text>${project.installationType}</text>
-                    <logic>equals</logic>
-                    <value>normal</value>
-                </compareText>
-            </ruleList>
-            <allowEmptyValue>@OPTIONAL_LICENSE_FILE@</allowEmptyValue>
-        </fileParameter>
-
-        <!-- skip-install-check option -->
-        <booleanParameter>
-            <ask>0</ask>
-            <name>skip_install_check</name>
-            <cliOptionName>skip-install-check</cliOptionName>
-            <title>Skip auto configuration after install</title>
-            <default>0</default>
-        </booleanParameter>
     </parameterList>
 
     <preInstallationActionList>
@@ -119,22 +89,6 @@
     <postInstallationActionList>
         <actionGroup>
             <actionList>
-                <!-- Copying subscription file to home directory -->
-                <if>
-                    <conditionRuleList>
-                        <compareTextLength logic="greater">
-                            <text>${licensefile}</text>
-                            <length>0</length>
-                        </compareTextLength>
-                    </conditionRuleList>
-                    <actionList>
-                        <copyFile>
-                            <origin>${licensefile}</origin>
-                            <destination>${installdir}/bin</destination>
-                        </copyFile>
-                    </actionList>
-                </if>
-
                 <!-- Writing list of components -->
                 <setInstallerVariable name="enzo_components" value=""/>
                 <foreach variables="comp" values="@PATH64_COMPONENT_LIST@">
