@@ -26,7 +26,7 @@
             <name>license1</name>
             <fileEncoding>utf-8</fileEncoding>
             <wrapText>1</wrapText>
-			<file>@CMAKE_CURRENT_SOURCE_DIR@/ekopath/psllvm/LICENSE.txt</file>
+			<file>@CMAKE_CURRENT_SOURCE_DIR@/ekopath/psllvm/LICENSE.TXT</file>
             <ruleList>
                 <compareText>
                     <text>${project.installationtype}</text>
