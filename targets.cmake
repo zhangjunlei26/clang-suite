@@ -14,13 +14,21 @@ set(_PATH64_SUPPORTED_TARGETS_STRING "Supported architectures are:
 # Target information table, keyed by entries of PATH64_ENABLE_TARGETS.
 # Reference table entries with ${_PATH64_TARGET_ARCH_${arch}}.
 
+# we need to pass appropriate system suffix for target, or otherwise
+# clang is not going to define __sun on Solaris
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "SunOS")
+    set(system_suffix "solaris")
+else()
+    set(system_suffix "linux-gnu")
+endif()
+
 set(_PATH64_TARGET_ARCH_x86_32 x8664)
-set(_PATH64_TARGET_FLAGS_x86_32 -target i686-linux-gnu)
+set(_PATH64_TARGET_FLAGS_x86_32 -target i686-${system_suffix})
 set(_PATH64_TARGET_BITS_x86_32 32)
 set(_PATH64_TARGET_ABI_x86_32 ABI_M32)
 
 set(_PATH64_TARGET_ARCH_x86_64 x8664)
-set(_PATH64_TARGET_FLAGS_x86_64 -target x86_64-linux-gnu)
+set(_PATH64_TARGET_FLAGS_x86_64 -target x86_64-${system_suffix})
 set(_PATH64_TARGET_BITS_x86_64 64)
 set(_PATH64_TARGET_ABI_x86_64 ABI_M64)
 
