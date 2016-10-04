@@ -56,7 +56,7 @@ function(build_openmp_llvm targ)
     list(APPEND cmd_line "-DLIBOMP_CXXFLAGS:STRING=${OMP_C_CXX_FLAGS}")
     list(APPEND cmd_line "-DLIBOMP_FFLAGS:STRING=${OMP_FORTRAN_FLAGS}")
     list(APPEND cmd_line "-DLIBOMP_ASMFLAGS=-x assembler-with-cpp")
-    list(APPEND cmd_line "-DLIBOMP_LDFLAGS=-L${PATH64_STAGE_DIR}/lib/${PSC_FULL_VERSION}/${arch}/${bits} -msse2")
+    list(APPEND cmd_line "-DLIBOMP_LDFLAGS=-L${PATH64_STAGE_DIR}/lib -msse2")
 #    list(APPEND cmd_line "-DLIBOMP_FORTRAN_MODULES=on")
     list(APPEND cmd_line "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
 
@@ -80,10 +80,10 @@ function(build_openmp_llvm targ)
 
     # copy library to stage dir
 
-    add_custom_command(OUTPUT ${PATH64_STAGE_DIR}/lib/${PSC_FULL_VERSION}/${arch}/${bits}/${LIBOMP_FILENAME}
+    add_custom_command(OUTPUT ${PATH64_STAGE_DIR}/lib/${LIBOMP_FILENAME}
                        COMMAND ${CMAKE_COMMAND} -E copy
                                ${build_dir}/src/${LIBOMP_FILENAME}
-                               ${PATH64_STAGE_DIR}/lib/${PSC_FULL_VERSION}/${arch}/${bits}/${LIBOMP_FILENAME}
+                               ${PATH64_STAGE_DIR}/lib/${LIBOMP_FILENAME}
                        DEPENDS  ${build_dir}/src/${LIBOMP_FILENAME})
 
 #    add_custom_command(OUTPUT "${PATH64_STAGE_DIR}/lib/${PSC_FULL_VERSION}/${arch}/${bits}/OMP_LIB.mod"
@@ -94,7 +94,7 @@ function(build_openmp_llvm targ)
 
     add_custom_target(openmp-copy-${target_suffix} ALL
                       DEPENDS
-                      "${PATH64_STAGE_DIR}/lib/${PSC_FULL_VERSION}/${arch}/${bits}/${LIBOMP_FILENAME}")
+                      "${PATH64_STAGE_DIR}/lib/${LIBOMP_FILENAME}")
 #                      "${PATH64_STAGE_DIR}/lib/${PSC_FULL_VERSION}/${arch}/${bits}/OMP_LIB.mod")
 
     add_dependencies(openmp-copy-${target_suffix} openmp-make-${target_suffix})
@@ -103,9 +103,9 @@ function(build_openmp_llvm targ)
     set(headers_dir "${build_dir}/src" PARENT_SCOPE)   # use any the header from any arch
 
     install(FILES
-                "${PATH64_STAGE_DIR}/lib/${PSC_FULL_VERSION}/${arch}/${bits}/${LIBOMP_FILENAME}"
+                "${PATH64_STAGE_DIR}/lib/${LIBOMP_FILENAME}"
 #                "${PATH64_STAGE_DIR}/lib/${PSC_FULL_VERSION}/${arch}/${bits}/OMP_LIB.mod"
-            DESTINATION "lib/${PSC_FULL_VERSION}/${arch}/${bits}")
+            DESTINATION "lib")
 
 endfunction()
 

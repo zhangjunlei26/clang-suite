@@ -124,7 +124,7 @@ foreach(header ${headers})
                                "${stage_header}"
                        DEPENDS "${src_header}")
     list(APPEND psclang_stage_headers "${stage_header}")
-    install(FILES "${stage_header}" DESTINATION "lib/${PSC_FULL_VERSION}/include")
+    install(FILES "${stage_header}" DESTINATION "lib/clang/${CLANG_FULL_VERSION}/include")
 endforeach()
 
 add_custom_target(psclang-headers-stage DEPENDS ${psclang_stage_headers})
