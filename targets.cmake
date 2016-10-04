@@ -18,6 +18,8 @@ set(_PATH64_SUPPORTED_TARGETS_STRING "Supported architectures are:
 # clang is not going to define __sun on Solaris
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "SunOS")
     set(system_suffix "solaris")
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+    set(system_suffix "apple-darwin13.1.0")
 else()
     set(system_suffix "linux-gnu")
 endif()
