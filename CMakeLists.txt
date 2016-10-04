@@ -10,10 +10,13 @@ INCLUDE(CheckCXXCompilerFlag)
 # TODO: detect clang version from sources
 set(CLANG_FULL_VERSION "4.0.0")
 
-# Whatever arbitrary number you'd like in 3 string format eg 3.9.99
-IF(NOT PSC_FULL_VERSION)
-    SET(PSC_FULL_VERSION "6.0.9" CACHE STRING "Defaulting to version 6.0.9")
-ENDIF()
+set(PSC_BUILD_NO "" CACHE STRING "Build number (appended to default version)")
+if(PSC_BUILD_NO)
+    set(PSC_FULL_VERSION_DEFAULT "${CLANG_FULL_VERSION}.${PSC_BUILD_NO}")
+else()
+    set(PSC_FULL_VERSION_DEFAULT "${CLANG_FULL_VERSION}")
+endif()
+SET(PSC_FULL_VERSION "${PSC_FULL_VERSION_DEFAULT}" CACHE STRING "Full version")
 
 option(PATH64_ENABLE_CXX "Enables C++" ON)
 option(PATH64_ENABLE_OPENMP "Enable OpenMP" ON)
