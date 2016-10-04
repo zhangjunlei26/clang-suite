@@ -90,6 +90,10 @@ option(LLVM_BUILD_UTILS "Build LLVM utility binaries. If OFF, just generate buil
 option(CLANG_BUILD_TOOLS "Build the Clang tools. If OFF, just generate build targets." OFF)
 option(CLANG_ENABLE_ARCMT "Build ARCMT." OFF)
 option(CLANG_ENABLE_STATIC_ANALYZER "Build static analyzer." OFF)
+set(CLANG_VENDOR "PathScale" CACHE STRING
+  "Vendor-specific text for showing with version information.")
+set(CLANG_REPOSITORY_STRING "build ${PSC_BUILD_NO};" CACHE STRING
+  "Vendor-specific text for showing the repository the source is taken from.")
 
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "SunOS")
     # disable because of unsupported linker flags
