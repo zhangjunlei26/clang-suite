@@ -181,8 +181,7 @@ endforeach()
 foreach(targ ${PATH64_ENABLE_TARGETS})
     set(targ_arch ${_PATH64_TARGET_ARCH_${targ}})
     set(targ_bits ${_PATH64_TARGET_BITS_${targ}})
-    file(MAKE_DIRECTORY ${Path64_BINARY_DIR}/lib/${PSC_FULL_VERSION}/${targ_arch}/${targ_bits})
-    file(MAKE_DIRECTORY ${Path64_BINARY_DIR}/lib/${PSC_FULL_VERSION}/${targ_arch}/${targ_bits}/system-provided)
+    file(MAKE_DIRECTORY ${Path64_BINARY_DIR}/lib)
 endforeach()
 
 
@@ -211,6 +210,26 @@ function(path64_get_host_arch res_var)
     path64_get_host_target(targ)
     set(${res_var} ${_PATH64_TARGET_ARCH_${targ}} PARENT_SCOPE)
 endfunction()
+
+
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+    set(crt_objects crt1.o crti.o crtn.o gcrt1.o Scrt1.o)
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "SunOS")
+    set(crt_objects crt1.o crti.o crtn.o gcrt1.o)
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
+    set(crt_objects crt1.o crti.o crtn.o gcrt1.o)
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+    set(crt_objects crt1.o )
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+    set(crt_objects crt1.o dllcrt1.o crtbegin.o crtend.o)
+
+    # copy mingw libraries to runtime directory on windows
+    set(crt_objects ${crt_objects} libmingw32.a libmingwex.a libmoldname.a
+                                   libmsvcrt.a libadvapi32.a libshell32.a
+                                   libuser32.a libkernel32.a)
+else()
+    message(FATAL_ERROR "Unsupported platform")
+endif()
 
 
 #p detecting CRT paths for all targets
@@ -252,7 +271,17 @@ foreach(targ ${PATH64_ENABLE_TARGETS})
             message(STATUS "crt path for '${targ}' target: '${${crt_path_name}}'")
         endif()
     endif()
+
+    foreach(obj ${crt_objects})
+        set(output "${Path64_BINARY_DIR}/lib/${obj}")
+        add_custom_command(OUTPUT "${output}"
+                           COMMAND "${CMAKE_COMMAND}" -E copy "${PSC_SYSROOT_${arch}}${crt_path}/${obj}" "${output}")
+        list(APPEND crt_deps "${output}")
+
+        install(FILES "${output}" DESTINATION "lib")
+    endforeach()
 endforeach()
+add_custom_target(compiler-stage-crt DEPENDS ${crt_deps})
 
 
 # Replaces substring in all strings in list

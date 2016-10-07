@@ -43,6 +43,8 @@ ADD_DEPENDENCIES(compiler-stage-libs-CXX compiler-stage-CXX compiler-stage-libs-
 ADD_DEPENDENCIES(compiler-stage-libs-Fortran compiler-stage-Fortran)
 ADD_DEPENDENCIES(compiler-stage-extra-libs-CXX compiler-stage-libs-CXX)
 
+ADD_DEPENDENCIES(compiler-stage compiler-stage-crt)
+
 
 set(LLVM_BUILT_FROM_ENZO ON)
 set(LLVM_COMPILER_IS_GCC_COMPATIBLE ON)

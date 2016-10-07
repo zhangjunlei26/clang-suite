@@ -212,14 +212,17 @@ foreach(arch ${PATH64_ENABLE_ARCHES})
 
     set(ARCH ${arch})
 
-#    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/crt_postinstall.xml.cmake.in"
-#                   "${CMAKE_CURRENT_BINARY_DIR}/crt_postinstall-${arch}.xml"
-#                   @ONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/crt_postinstall.xml.cmake.in"
+                   "${CMAKE_CURRENT_BINARY_DIR}/crt_postinstall-${arch}.xml"
+                   @ONLY)
 
-#    file(READ "${CMAKE_CURRENT_BINARY_DIR}/crt_postinstall-${arch}.xml" crt_actions)
-#    set(POST_INSTALL_ACTION_LIST "${POST_INSTALL_ACTION_LIST}${crt_actions}\n")
+    file(READ "${CMAKE_CURRENT_BINARY_DIR}/crt_postinstall-${arch}.xml" crt_actions)
+    set(POST_INSTALL_ACTION_LIST "${POST_INSTALL_ACTION_LIST}${crt_actions}\n")
 endforeach()
 
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+    path64_add_package_files(base bin "${CMAKE_CURRENT_SOURCE_DIR}/detect_crt_path.sh")
+endif()
 
 
 foreach(targ ${PATH64_ENABLE_TARGETS})
@@ -228,18 +231,18 @@ foreach(targ ${PATH64_ENABLE_TARGETS})
 
     set(dest_dir lib)
 
-#    if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
-#        path64_add_package_files(base ${dest_dir}
-#                                 ${PATH64_STAGE_DIR}/lib/crtendS.o
-#                                 ${PATH64_STAGE_DIR}/lib/crtend.o
-#                                 ${PATH64_STAGE_DIR}/lib/crtbeginS.o
-#                                 ${PATH64_STAGE_DIR}/lib/crtbegin.o)
-#
-#        path64_add_package_files_no_installer(base ${dest_dir}/system-provided
-#                                              ${PATH64_STAGE_DIR}/lib/system-provided/crt1.o
-#                                              ${PATH64_STAGE_DIR}/lib/system-provided/crti.o
-#                                              ${PATH64_STAGE_DIR}/lib/system-provided/crtn.o)
-#    endif()
+    if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+        path64_add_package_files(base ${dest_dir}
+                                 ${PATH64_STAGE_DIR}/lib/crtendS.o
+                                 ${PATH64_STAGE_DIR}/lib/crtend.o
+                                 ${PATH64_STAGE_DIR}/lib/crtbeginS.o
+                                 ${PATH64_STAGE_DIR}/lib/crtbegin.o)
+
+        path64_add_package_files_no_installer(base ${dest_dir}
+                                              ${PATH64_STAGE_DIR}/lib/system-provided/crt1.o
+                                              ${PATH64_STAGE_DIR}/lib/system-provided/crti.o
+                                              ${PATH64_STAGE_DIR}/lib/system-provided/crtn.o)
+    endif()
 
     if(PATH64_ENABLE_CXX)
         if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")

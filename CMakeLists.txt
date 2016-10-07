@@ -345,5 +345,6 @@ foreach(comp ${components})
     endif()
 endforeach()
 
+add_subdirectory(csu)
 include(packages.cmake)
 

@@ -1,0 +1,144 @@
+
+<!-- perform actions only if base component is selected -->
+<if><conditionRuleList><isTrue value="${project.component(base).selected}"/></conditionRuleList><actionList>
+
+
+    <!-- detect crt location -->
+
+    <setInstallerVariable name="crt_path_64" value=""/>
+    <setInstallerVariable name="crt_path_32" value=""/>
+
+    <if>
+        <conditionRuleList>
+            <isTrue value="@DETECT_CRT@"/>
+        </conditionRuleList>
+    <actionList>
+        <!-- detecting crt for arch -->
+
+        <!-- invoke detect_crt_path.sh script for 64bit -->
+        <runProgram>
+            <program>${installdir}/bin/detect_crt_path.sh</program>
+            <programArguments>64-bit</programArguments>
+            <abortOnError>1</abortOnError>
+            <showMessageOnError>1</showMessageOnError>
+            <customErrorMessage>Can't detect 64-bit crt path for linux 64-bit</customErrorMessage>
+        </runProgram>
+
+        <setInstallerVariable name="crt_path_64" value="${program_stdout}"/>
+
+        <!-- invoke detect_crt_path.sh script for 32bit -->
+		<!--
+        <if>
+            <conditionRuleList>
+                <isTrue value="@ENABLE_32BIT@"/>
+            </conditionRuleList>
+        <actionList>
+            <runProgram>
+                <program>${installdir}/bin/detect_crt_path.sh</program>
+                <programArguments>32-bit</programArguments>
+                <abortOnError>1</abortOnError>
+                <showMessageOnError>1</showMessageOnError>
+                <customErrorMessage>Can't detect 32-bit crt path for linux 32-bit</customErrorMessage>
+            </runProgram>
+
+            <setInstallerVariable name="crt_path_32" value="${program_stdout}"/>
+        </actionList></if>
+		-->
+
+    </actionList><elseActionList>
+        <setInstallerVariable name="crt_path_64" value="@CRT_PATH_64@"/>
+        <setInstallerVariable name="crt_path_32" value="@CRT_PATH_32@"/>
+    </elseActionList></if>
+
+    <!-- checking crt path -->
+    <throwError>
+        <ruleList>
+            <compareText logic="equals" text="${crt_path_64}" value=""/>
+        </ruleList>
+        <text>Don't know how to detect 64-bit crt path on ${platform_name} platform</text>
+    </throwError>
+
+	<!--
+    <throwError>
+        <ruleList>
+            <isTrue value="@ENABLE_32BIT"/>
+            <compareText logic="equals" text="${crt_path_32}" value=""/>
+        </ruleList>
+        <text>Don't know how to detect 32-bit crt path on ${platform_name} platform</text>
+    </throwError>
+	-->
+
+
+    <!-- copying crt objects -->
+
+    <if>
+        <conditionRuleList>
+            <platformTest type="linux"/>
+        </conditionRuleList>
+    <actionList>
+        <setInstallerVariable name="crt_objects" value="crt1.o crti.o crtn.o gcrt1.o Scrt1.o"/>
+    </actionList></if>
+
+    <if>
+        <conditionRuleList>
+            <platformTest type="solaris"/>
+        </conditionRuleList>
+    <actionList>
+        <setInstallerVariable name="crt_objects" value="crt1.o crti.o crtn.o gcrt1.o"/>
+    </actionList></if>
+
+    <if>
+        <conditionRuleList>
+            <platformTest type="freebsd"/>
+        </conditionRuleList>
+    <actionList>
+        <setInstallerVariable name="crt_objects" value="crt1.o crti.o crtn.o gcrt1.o"/>
+    </actionList></if>
+
+    <if>
+        <conditionRuleList>
+            <platformTest type="osx"/>
+        </conditionRuleList>
+    <actionList>
+        <setInstallerVariable name="crt_objects" value=""/>
+    </actionList></if>
+
+    <if>
+        <conditionRuleList>
+            <platformTest type="windows"/>
+        </conditionRuleList>
+    <actionList>
+        <setInstallerVariable name="crt_objects" value="crt1.o dllcrt1.o crtbegin.o crtend.o libmingw32.a libmingwex.a libmoldname.a libmsvcrt.a libadvapi32.a libshell32.a libuser32.a libkernel32.a"/>
+    </actionList></if>
+
+    <createDirectory path="${installdir}/lib"/>
+	<!--
+    <createDirectory path="${installdir}/lib">
+        <ruleList>
+            <isTrue value="@ENABLE_32BIT@"/>
+        </ruleList>
+    </createDirectory>
+	-->
+
+    <foreach variables="obj" values="${crt_objects}"><actionList>
+        <copyFile origin="${crt_path_64}/${obj}" destination="${installdir}/lib"/>
+        <addFilesToUninstaller>
+            <files>${installdir}/lib/${obj}</files>
+        </addFilesToUninstaller>
+
+		<!--
+        <if>
+            <conditionRuleList>
+                <isTrue value="@ENABLE_32BIT@"/>
+            </conditionRuleList>
+        <actionList>
+            <copyFile origin="${crt_path_32}/${obj}" destination="${installdir}/lib/@PSC_FULL_VERSION@/@ARCH@/32/system-provided"/>
+            <addFilesToUninstaller>
+                <files>${installdir}/lib/@PSC_FULL_VERSION@/@ARCH@/32/system-provided/${obj}</files>
+            </addFilesToUninstaller>
+        </actionList></if>
+		-->
+    </actionList></foreach>
+    
+</actionList></if>
+
