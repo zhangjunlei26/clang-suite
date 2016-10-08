@@ -27,7 +27,6 @@
         <setInstallerVariable name="crt_path_64" value="${program_stdout}"/>
 
         <!-- invoke detect_crt_path.sh script for 32bit -->
-		<!--
         <if>
             <conditionRuleList>
                 <isTrue value="@ENABLE_32BIT@"/>
@@ -43,7 +42,6 @@
 
             <setInstallerVariable name="crt_path_32" value="${program_stdout}"/>
         </actionList></if>
-		-->
 
     </actionList><elseActionList>
         <setInstallerVariable name="crt_path_64" value="@CRT_PATH_64@"/>
@@ -58,7 +56,6 @@
         <text>Don't know how to detect 64-bit crt path on ${platform_name} platform</text>
     </throwError>
 
-	<!--
     <throwError>
         <ruleList>
             <isTrue value="@ENABLE_32BIT"/>
@@ -66,7 +63,6 @@
         </ruleList>
         <text>Don't know how to detect 32-bit crt path on ${platform_name} platform</text>
     </throwError>
-	-->
 
 
     <!-- copying crt objects -->
@@ -111,33 +107,29 @@
         <setInstallerVariable name="crt_objects" value="crt1.o dllcrt1.o crtbegin.o crtend.o libmingw32.a libmingwex.a libmoldname.a libmsvcrt.a libadvapi32.a libshell32.a libuser32.a libkernel32.a"/>
     </actionList></if>
 
-    <createDirectory path="${installdir}/lib"/>
-	<!--
-    <createDirectory path="${installdir}/lib">
+	<createDirectory path="${installdir}/lib/clang/@CLANG_FULL_VERSION@/lib/@CLANGRT_SYSTEM@/@LLVM_ARCH_64@"/>
+	<createDirectory path="${installdir}/lib/clang/@CLANG_FULL_VERSION@/lib/@CLANGRT_SYSTEM@/@LLVM_ARCH_32@">
         <ruleList>
             <isTrue value="@ENABLE_32BIT@"/>
         </ruleList>
     </createDirectory>
-	-->
 
     <foreach variables="obj" values="${crt_objects}"><actionList>
-        <copyFile origin="${crt_path_64}/${obj}" destination="${installdir}/lib"/>
+        <copyFile origin="${crt_path_64}/${obj}" destination="${installdir}/lib/clang/@CLANG_FULL_VERSION@/lib/@CLANGRT_SYSTEM@/@LLVM_ARCH_64@"/>
         <addFilesToUninstaller>
-            <files>${installdir}/lib/${obj}</files>
+            <files>${installdir}/lib/clang/@CLANG_FULL_VERSION@/lib/@CLANGRT_SYSTEM@/@LLVM_ARCH_64@/${obj}</files>
         </addFilesToUninstaller>
 
-		<!--
         <if>
             <conditionRuleList>
                 <isTrue value="@ENABLE_32BIT@"/>
             </conditionRuleList>
         <actionList>
-            <copyFile origin="${crt_path_32}/${obj}" destination="${installdir}/lib/@PSC_FULL_VERSION@/@ARCH@/32/system-provided"/>
+            <copyFile origin="${crt_path_32}/${obj}" destination="${installdir}/lib/clang/@CLANG_FULL_VERSION@/lib/@CLANGRT_SYSTEM@/@LLVM_ARCH_32@"/>
             <addFilesToUninstaller>
-                <files>${installdir}/lib/@PSC_FULL_VERSION@/@ARCH@/32/system-provided/${obj}</files>
+                <files>${installdir}/lib/clang/@CLANG_FULL_VERSION@/lib/@CLANGRT_SYSTEM@/@LLVM_ARCH_32@/${obj}</files>
             </addFilesToUninstaller>
         </actionList></if>
-		-->
     </actionList></foreach>
     
 </actionList></if>

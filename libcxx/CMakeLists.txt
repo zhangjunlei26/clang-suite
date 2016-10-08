@@ -5,7 +5,7 @@ file(GLOB_RECURSE headers
      "${PATH64_LIBCXX_SOURCE}/include/*")
 
 set(libcxx_stage_headers)
-set(libcxx_stage_include_dir "${PATH64_STAGE_DIR}/include/c++/v1")
+set(libcxx_stage_include_dir "${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/include/c++/v1")
 
 foreach(header ${headers})
     set(stage_header "${libcxx_stage_include_dir}/${header}")
@@ -57,13 +57,11 @@ function(build_libcxx targ shared)
         set(target_suffix "${target_suffix}-shared")
     endif()
 
-    path64_get_target_arch(arch ${targ})
-    path64_get_target_bits(bits ${targ})
+    set(arch ${_PATH64_TARGET_LLVM_ARCH_${targ}})
 
     add_custom_target(libcxx-cmake-${target_suffix}
                       COMMAND ${cmd_line} "-DCMAKE_C_FLAGS:STRING=${c_flags_str} -nodefaultlibs -lc"
                                           "-DCMAKE_CXX_FLAGS:STRING:=${cxx_flags_str} -nodefaultlibs -lc"
-                                          "-DCMAKE_SHARED_LINKER_FLAGS:STRING=-L${PATH64_STAGE_DIR}/lib"
                       WORKING_DIRECTORY "${build_dir}")
     add_dependencies(libcxx-cmake-${target_suffix} compiler-stage-CXX)
     path64_add_dependencies_from_multitarget(libcxx-cmake-${target_suffix} cxxrt)
@@ -78,7 +76,7 @@ function(build_libcxx targ shared)
 
     # copy library to stage dir
 
-    set(stage_path "${PATH64_STAGE_DIR}/lib")
+	set(stage_path "${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/${arch}")
 
     if(shared)
         if("${CMAKE_SYSTEM_NAME}" STREQUAL "SunOS")
@@ -157,7 +155,7 @@ if(NOT PATH64_USE_SYSTEM_LIBCXX)
         endif()
         build_libcxx(${targ} OFF)
     endforeach()
-    install(DIRECTORY "${PATH64_STAGE_DIR}/include/c++/v1"
+    install(DIRECTORY "${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/include/c++/v1"
             DESTINATION "include/c++/v1")
 endif()
 

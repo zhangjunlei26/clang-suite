@@ -175,9 +175,8 @@ endforeach()
 
 
 foreach(targ ${PATH64_ENABLE_TARGETS})
-    set(targ_arch ${_PATH64_TARGET_ARCH_${targ}})
-    set(targ_bits ${_PATH64_TARGET_BITS_${targ}})
-    file(MAKE_DIRECTORY ${Path64_BINARY_DIR}/lib)
+    set(arch ${_PATH64_TARGET_LLVM_ARCH_${targ}})
+    file(MAKE_DIRECTORY ${Path64_BINARY_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/${arch})
 endforeach()
 
 
@@ -357,24 +356,6 @@ function(path64_get_multitarget_cmake_target res_var name target)
 endfunction()
 
 
-# Returns multiarch cmake target name for specified architecture
-function(path64_get_multiarch_cmake_target res_var name arch)
-    set(${res_var} ${name}-${arch} PARENT_SCOPE)
-endfunction()
-
-
-# Returns list of cmake targets for specified multiarch target
-function(path64_get_multiarch_targets res_var name)
-    set(res)
-    foreach(arch ${PATH64_ENABLE_ARCHES})
-        path64_get_multiarch_cmake_target(targ ${name} ${arch})
-        list(APPEND res ${targ})
-    endforeach()
-
-    set(${res_var} ${res} PARENT_SCOPE)
-endfunction()
-
-
 # Checks that target with specified name exists
 function(path64_check_target_exists tname)
     if(NOT _PATH64_TARGET_ARCH_${tname})
@@ -429,15 +410,6 @@ function(path64_set_multitarget_sources_base_path name)
     set(path64_multitarget_sources_base_${name} ${ARGN} PARENT_SCOPE)
 endfunction()
 
-
-# Sets sources for specified architecture in multiarch source list
-function(path64_set_multiarch_sources src_list_name arch)
-    if(NOT "X${arch}" STREQUAL "XCOMMON")
-        path64_check_arch_exists("${arch}")
-    endif()
-
-    set(${src_list_name}_${arch} ${ARGN} PARENT_SCOPE)
-endfunction()
 
 # I think this should be deleted
 # There's a bug in top level cmake file that if this is ON it breaks Fortran
@@ -522,12 +494,11 @@ function(path64_add_library_for_target name target type src_base_path)
     path64_check_target_exists(${target})
 
     # Compiler ABI.
-    set(arch ${_PATH64_TARGET_ARCH_${target}})
-    set(bits ${_PATH64_TARGET_BITS_${target}})
+    set(arch ${_PATH64_TARGET_LLVM_ARCH_${targ}})
 
     set(build_lib_dir "${path64_multitarget_property_${name}_OUTPUT_DIRECTORY}")
     if("${build_lib_dir}" STREQUAL "")
-        set(build_lib_dir ${Path64_BINARY_DIR}/lib)
+        set(build_lib_dir ${Path64_BINARY_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/${arch})
     endif()
 
     make_directory("${build_lib_dir}")
@@ -808,49 +779,6 @@ function(path64_add_library_for_target name target type src_base_path)
 endfunction()
 
 
-# Adds library for specified architecture
-function(path64_add_library_for_arch name arch type)
-    path64_check_arch_exists(${arch})
-
-    # Compiler ABI.
-    set(arch_flags ${_PATH64_ARCH_FLAGS_${arch}})
-    set(build_lib_dir ${Path64_BINARY_DIR}/lib/${PSC_FULL_VERSION}/${arch})
-
-    # Replacing @ARCH@ with architecture  name in source names
-    set(sources ${ARGN})
-    list_string_replace_arch(sources ${arch})
-
-    add_library (${name} ${type} ${sources})
-    set_property(TARGET ${name} PROPERTY COMPILE_FLAGS ${arch_flags})
-    set_property(TARGET ${name} PROPERTY LINK_FLAGS ${arch_flags})
-
-    set_property(TARGET ${name} PROPERTY LIBRARY_OUTPUT_DIRECTORY ${build_lib_dir})
-    set_property(TARGET ${name} PROPERTY ARCHIVE_OUTPUT_DIRECTORY ${build_lib_dir})
-
-endfunction()
-
-
-# Adds executable for specified architecture
-function(path64_add_executable_for_arch name arch)
-    path64_check_arch_exists(${arch})
-
-    # Compiler ABI.
-    set(arch_flags ${_PATH64_ARCH_FLAGS_${arch}})
-    set(build_lib_dir ${Path64_BINARY_DIR}/lib/${PSC_FULL_VERSION}/${arch})
-
-    # Replacing @ARCH@ with architecture  name in source names
-    set(sources ${ARGN})
-    list_string_replace_arch(sources ${arch})
-
-    add_executable(${name} ${sources})
-    set_property(TARGET ${name} PROPERTY COMPILE_FLAGS ${arch_flags})
-    set_property(TARGET ${name} PROPERTY LINK_FLAGS ${arch_flags})
-
-    set_property(TARGET ${name} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${build_lib_dir})
-
-endfunction()
-
-
 # Adds library for all enabled targets
 function(path64_add_multitarget_library name type)
     set(src_list_name path64_multitarget_sources_${name})
@@ -868,79 +796,6 @@ function(path64_add_multitarget_library name type)
 endfunction()
 
 
-# Adds library for all enabled architectures
-function(path64_add_multiarch_library name type src_list_name)
-    foreach(arch ${PATH64_ENABLE_ARCHES})
-        path64_get_multiarch_cmake_target(tg_name ${name} ${arch})
-        if(${src_list_name}_${arch})
-            path64_add_library_for_arch(${tg_name} ${arch} ${type} ${${src_list_name}_${arch}})
-        else()
-            path64_add_library_for_arch(${tg_name} ${arch} ${type} ${${src_list_name}_COMMON})
-        endif()
-        set_property(TARGET ${tg_name} PROPERTY OUTPUT_NAME ${name})
-    endforeach()
-endfunction()
-
-
-# Adds executable for all enabled architectures
-function(path64_add_multiarch_executable name src_list_name)
-    foreach(arch ${PATH64_ENABLE_ARCHES})
-        path64_get_multiarch_cmake_target(tg_name ${name} ${arch})
-        if(${src_list_name}_${arch})
-            path64_add_executable_for_arch(${tg_name} ${arch} ${${src_list_name}_${arch}})
-        else()
-            path64_add_executable_for_arch(${tg_name} ${arch} ${${src_list_name}_COMMON})
-        endif()
-        set_property(TARGET ${tg_name} PROPERTY OUTPUT_NAME ${name})
-    endforeach()
-endfunction()
-
-
-# Adds rules for installing multiarch target
-function(path64_install_multiarch name)
-    foreach(arch ${PATH64_ENABLE_ARCHES})
-        path64_get_multiarch_cmake_target(tg_name ${name} ${arch})
-        set(install_lib_dir ${PATH64_LIB_PATH}/${arch})
-        install(TARGETS ${tg_name}
-                LIBRARY DESTINATION ${install_lib_dir}
-                ARCHIVE DESTINATION ${install_lib_dir}
-                RUNTIME DESTINATION ${install_lib_dir})
-    endforeach()
-endfunction()
-
-
-# Sets property in multitarget for specified target
-function(path64_set_property_for_target name targ prop)
-    set(prop_vals ${ARGN})
-
-    if(prop MATCHES "COMPILE_FLAGS" OR prop MATCHES "LINK_FLAGS")
-        set(arch ${_PATH64_TARGET_ARCH_${targ}})
-        set(arch_flag "${_PATH64_TARGET_FLAGS_STR_${targ}} ${_PATH64_ARCH_FLAGS_${arch}}")
-        set(prop_vals "${prop_vals} ${arch_flag}")
-    endif()
-
-    path64_get_multitarget_cmake_target(tg ${name} ${targ})
-    set_property(TARGET ${tg} PROPERTY ${prop} ${prop_vals})
-endfunction()
-
-
-# Sets property in multiarch target for specified archiecture
-function(path64_set_property_for_arch name arch prop)
-    set(prop_vals ${ARGN})
-    list_string_replace_arch(prop_vals ${arch})
-
-    if(prop MATCHES "COMPILE_FLAGS" OR prop MATCHES "LINK_FLAGS")
-        set(prop_vals "${prop_vals} ${_PATH64_ARCH_FLAGS_${arch}}")
-    endif()
-
-    if(prop_vals)
-        set_property(TARGET ${name} PROPERTY ${prop} ${prop_vals})
-    else()
-        set_property(TARGET ${name} PROPERTY ${prop} "")
-    endif()
-endfunction()
-
-
 # Sets property for multitarget
 function(path64_set_multitarget_property_ name prop)
     foreach(targ ${PATH64_ENABLE_TARGETS})
@@ -955,186 +810,10 @@ function(path64_set_multitarget_property_for_target name targ prop)
 endfunction()
 
 
-# Sets property for multiarch target
-function(path64_set_multiarch_property name prop)
-    foreach(arch ${PATH64_ENABLE_ARCHES})
-        path64_get_multiarch_cmake_target(tg ${name} ${arch})
-        path64_set_property_for_arch(${tg} ${arch} ${prop} ${ARGN})
-    endforeach()
-endfunction()
-
-
-# Sets arch specific property for multiarch target
-function(path64_set_multiarch_arch_property name arch prop)
-    path64_get_multiarch_cmake_target(tg ${name} ${arch})
-    path64_set_property_for_arch(${tg} ${arch} ${prop} ${ARGN})
-endfunction()
-
-
 # Adds link libraries to multitarget
 function(path64_multitarget_link_libraries name)
     foreach(targ ${PATH64_ENABLE_TARGETS})
         set(path64_multitarget_link_libraries_${name} ${ARGN} PARENT_SCOPE)
-    endforeach()
-endfunction()
-
-
-# Adds link libraries to multiarch target
-function(path64_multiarch_link_libraries name)
-    foreach(arch ${PATH64_ENABLE_ARCHES})
-        path64_get_multiarch_cmake_target(tg ${name} ${arch})
-        target_link_libraries(${tg} ${ARGN})
-    endforeach()
-endfunction()
-
-
-# Adds multiarch link libraries to multiarch target
-function(path64_multiarch_link_multiarch_libraries name)
-    foreach(arch ${PATH64_ENABLE_ARCHES})
-        path64_get_multiarch_cmake_target(tg ${name} ${arch})
-        foreach(lib ${ARGN})
-            path64_get_multiarch_cmake_target(lib_tg ${lib} ${arch})
-            target_link_libraries(${tg} ${lib_tg})
-        endforeach()
-    endforeach()
-endfunction()
-
-
-# Adds custom multiarch command
-function(path64_add_multiarch_custom_command)
-    # reading parameters
-    set(outputs)
-    set(cmd_with_args)
-    set(depends)
-    set(work_dir "")
-    set(read_stage "UNKNOWN")
-
-    foreach(arg ${ARGN})
-        set(new_read_stage "UNKNOWN")
-        
-        if("X${arg}" STREQUAL "XOUTPUT")
-            set(new_read_stage "OUTPUT")
-        elseif("X${arg}" STREQUAL "XCOMMAND")
-            set(new_read_stage "COMMAND")
-        elseif("X${arg}" STREQUAL "XDEPENDS")
-            set(new_read_stage "DEPENDS")
-        elseif("X${arg}" STREQUAL "XWORKING_DIRECTORY")
-            set(new_read_stage "WORKING_DIRECTORY")
-        endif()
-
-        if("X${new_read_stage}" STREQUAL "XUNKNOWN")
-            if("X${read_stage}" STREQUAL "XOUTPUT")
-                list(APPEND outputs ${arg})
-            elseif("X${read_stage}" STREQUAL "XCOMMAND")
-                list(APPEND cmd_with_args ${arg})
-            elseif("X${read_stage}" STREQUAL "XDEPENDS")
-                list(APPEND depends ${arg})
-            elseif("X${read_stage}" STREQUAL "XWORKING_DIRECTORY")
-                set(work_dir ${arg})
-            endif()
-        else()
-            set(read_stage ${new_read_stage})
-        endif()
-    endforeach()
-
-    # adding custom commands for each architecture
-    foreach(arch ${PATH64_ENABLE_ARCHES})
-        # replacing @ARCH@ with arch name in all parameters
-        set(arch_outputs ${outputs})
-        set(arch_depends ${depends})
-        set(arch_cmd_with_args ${cmd_with_args})
-        list_string_replace_arch(arch_outputs ${arch})
-        list_string_replace_arch(arch_depends ${arch})
-        list_string_replace_arch(arch_cmd_with_args ${arch})
-        list_string_replace_arch(work_dir ${arch})
-
-        # adding command
-        add_custom_command(OUTPUT ${arch_outputs}
-                           COMMAND ${arch_cmd_with_args}
-                           DEPENDS ${arch_depends}
-                           WORKING_DIRECTORY ${work_dir})
-    endforeach()
-endfunction()
-
-
-# Adds custom multiarch target
-function(path64_add_multiarch_custom_target name)
-    # reading parameters
-    set(cmd_with_args)
-    set(depends)
-    set(read_stage "UNKNOWN")
-
-    foreach(arg ${ARGN})
-        set(new_read_stage "UNKNOWN")
-        if("X${arg}" STREQUAL "XCOMMAND")
-            set(new_read_stage "COMMAND")
-        elseif("X${arg}" STREQUAL "XDEPENDS")
-            set(new_read_stage "DEPENDS")
-        endif()
-
-        if("X${new_read_stage}" STREQUAL "XUNKNOWN")
-            if("X${read_stage}" STREQUAL "XCOMMAND")
-                list(APPEND cmd_with_args ${arg})
-            elseif("X${read_stage}" STREQUAL "XDEPENDS")
-                list(APPEND depends ${arg})
-            endif()
-        else()
-            set(read_stage ${new_read_stage})
-        endif()
-    endforeach()
-
-    # adding custom commands for each architecture
-    foreach(arch ${PATH64_ENABLE_ARCHES})
-        # replacing @ARCH@ with arch name in all parameters
-        set(arch_outputs ${outputs})
-        set(arch_depends ${depends})
-        set(arch_cmd_with_args ${cmd_with_args})
-        list_string_replace_arch(arch_outputs ${arch})
-        list_string_replace_arch(arch_depends ${arch})
-        list_string_replace_arch(arch_cmd_with_arg ${arch})
-
-        # adding target
-        path64_get_multiarch_cmake_target(tg ${name} ${arch})
-        if(arch_cmd_with_args)
-            add_custom_target(${tg}
-                              COMMAND ${arch_cmd_with_args}
-                              DEPENDS ${arch_depends})
-        else()
-            add_custom_target(${tg}
-                              DEPENDS ${arch_depends})
-        endif()
-    endforeach()
-endfunction()
-
-
-# Adds dependency to multiarch target
-function(path64_add_multiarch_dependencies name)
-    foreach(arch ${PATH64_ENABLE_ARCHES})
-        path64_get_multiarch_cmake_target(tg ${name} ${arch})
-        add_dependencies(${tg} ${ARGN})
-    endforeach()
-endfunction()
-
-
-# Adds dependency to multiarch target from multiarch targets
-function(path64_add_multiarch_multiarch_dependencies name)
-    foreach(arch ${PATH64_ENABLE_ARCHES})
-        path64_get_multiarch_cmake_target(tg ${name} ${arch})
-        foreach(dep ${ARGN})
-            path64_get_multiarch_cmake_target(dep_tg ${dep} ${arch})
-            add_dependencies(${tg} ${dep_tg})
-        endforeach()
-    endforeach()
-endfunction()
-
-
-# Adds dependencies from multiarch targets
-function(path64_add_dependencies_from_multiarch name)
-    foreach(dep ${ARGN})
-        foreach(arch ${PATH64_ENABLE_ARCHES})
-            path64_get_multiarch_cmake_target(dep_tg ${dep} ${arch})
-            add_dependencies(${name} ${dep_tg})
-        endforeach()
     endforeach()
 endfunction()
 
