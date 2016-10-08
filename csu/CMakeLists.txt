@@ -2,10 +2,9 @@
 set(crt_objects)
 
 foreach(targ ${PATH64_ENABLE_TARGETS})
-    path64_get_target_arch(arch ${targ})
-    path64_get_target_bits(bits ${targ})
+    set(arch ${_PATH64_TARGET_LLVM_ARCH_${targ}})
 
-    set(output_dir "${Path64_BINARY_DIR}/lib")
+    set(output_dir "${Path64_BINARY_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/${arch}")
     file(MAKE_DIRECTORY "${output_dir}")
 
     set(compiler "${Path64_BINARY_DIR}/bin/clang")
@@ -39,7 +38,7 @@ foreach(targ ${PATH64_ENABLE_TARGETS})
                   ${output_dir}/crtbeginS.o
                   ${output_dir}/crtend.o
                   ${output_dir}/crtendS.o
-            DESTINATION lib/${arch}/${bits})
+            DESTINATION lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/${arch})
 
     list(APPEND crt_objects
          ${output_dir}/crtbegin.o

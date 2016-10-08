@@ -4,8 +4,6 @@ set(_PATH64_SUPPORTED_TARGETS_STRING "Supported architectures are:
   x86_64
   mips_32
   mips_64
-  rsk6_32
-  rsk6_64
   powerpc64
   powerpc64le
   arm
@@ -28,11 +26,13 @@ set(_PATH64_TARGET_ARCH_x86_32 x8664)
 set(_PATH64_TARGET_FLAGS_x86_32 -target i686-${system_suffix})
 set(_PATH64_TARGET_BITS_x86_32 32)
 set(_PATH64_TARGET_ABI_x86_32 ABI_M32)
+set(_PATH64_TARGET_LLVM_ARCH_x86_32 i386)
 
 set(_PATH64_TARGET_ARCH_x86_64 x8664)
 set(_PATH64_TARGET_FLAGS_x86_64 -target x86_64-${system_suffix})
 set(_PATH64_TARGET_BITS_x86_64 64)
 set(_PATH64_TARGET_ABI_x86_64 ABI_M64)
+set(_PATH64_TARGET_LLVM_ARCH_x86_64 x86_64)
 
 # use -march=anyx86 for x8664 target in package mode
 if(PATH64_ENABLE_PSCRUNTIME AND "${CMAKE_C_COMPILER_ID}" STREQUAL "PathScale" AND PATH64_ENABLE_PACKAGE_MODE)
@@ -44,41 +44,37 @@ set(_PATH64_TARGET_ARCH_mips_32 mips)
 set(_PATH64_TARGET_FLAGS_mips_32 -target mips32)
 set(_PATH64_TARGET_BITS_mips_32 32)
 set(_PATH64_TARGET_ABI_mips_32 ABI_N32)
+set(_PATH64_TARGET_LLVM_ARCH_mips_32 mips)
 
 set(_PATH64_TARGET_ARCH_mips_64 mips)
 set(_PATH64_TARGET_FLAGS_mips_64 -target mips64)
 set(_PATH64_TARGET_BITS_mips_64 64)
 set(_PATH64_TARGET_ABI_mips_64 ABI_64)
-
-set(_PATH64_TARGET_ARCH_rsk6_32 rsk6)
-set(_PATH64_TARGET_FLAGS_rsk6_32 -target rsk6_32)
-set(_PATH64_TARGET_BITS_rsk6_32 32)
-set(_PATH64_TARGET_ABI_rsk6_32 ABI_Q32)
-
-set(_PATH64_TARGET_ARCH_rsk6_64 rsk6)
-set(_PATH64_TARGET_FLAGS_rsk6_64 -target rsk6_64)
-set(_PATH64_TARGET_BITS_rsk6_64 64)
-set(_PATH64_TARGET_ABI_rsk6_64 ABI_Q64)
+set(_PATH64_TARGET_LLVM_ARCH_mips_64 mips64)
 
 set(_PATH64_TARGET_ARCH_arm arm)
 set(_PATH64_TARGET_FLAGS_arm -target arm64)
 set(_PATH64_TARGET_BITS_arm 64)
 set(_PATH64_TARGET_ABI_arm ABI_ARM_ver1)
+set(_PATH64_TARGET_LLVM_ARCH_arm aarch64)
 
 set(_PATH64_TARGET_ARCH_aarch64 aarch64)
 set(_PATH64_TARGET_FLAGS_aarch64 -target aarch64)
 set(_PATH64_TARGET_BITS_aarch64 64)
 set(_PATH64_TARGET_ABI_aarch64 ABI_AARCH64)
+set(_PATH64_TARGET_LLVM_ARCH_aarch64 aarch64)
 
 set(_PATH64_TARGET_ARCH_powerpc64 powerpc64)
 set(_PATH64_TARGET_FLAGS_powerpc64 -target powerpc64)
 set(_PATH64_TARGET_BITS_powerpc64 64)
 set(_PATH64_TARGET_ABI_powerpc64 ABI_PPC64BE)
+set(_PATH64_TARGET_LLVM_ARCH_powerpc64 powerpc64)
 
 set(_PATH64_TARGET_ARCH_powerpc64le powerpc64)
 set(_PATH64_TARGET_FLAGS_powerpc64le -target powerpc64le)
 set(_PATH64_TARGET_BITS_powerpc64le 64)
 set(_PATH64_TARGET_ABI_powerpc64le ABI_PPC64LE)
+set(_PATH64_TARGET_LLVM_ARCH_powerpc64le powerpc64le)
 
 
 # setting _PATH64_TARGET_FLAGS_STR_<targ> variables
@@ -239,6 +235,7 @@ foreach(targ ${PATH64_ENABLE_TARGETS})
 
     path64_get_target_arch(arch "${targ}")
     path64_get_host_arch(host_arch)
+    set(llvm_arch ${_PATH64_TARGET_LLVM_ARCH_${targ}})
 
     # try detect crt path for host arch if not specified
     if("${crt_path}" STREQUAL "")
@@ -273,12 +270,12 @@ foreach(targ ${PATH64_ENABLE_TARGETS})
     endif()
 
     foreach(obj ${crt_objects})
-        set(output "${Path64_BINARY_DIR}/lib/${obj}")
+        set(output "${Path64_BINARY_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/${llvm_arch}/${obj}")
         add_custom_command(OUTPUT "${output}"
                            COMMAND "${CMAKE_COMMAND}" -E copy "${PSC_SYSROOT_${arch}}${crt_path}/${obj}" "${output}")
         list(APPEND crt_deps "${output}")
 
-        install(FILES "${output}" DESTINATION "lib")
+        install(FILES "${output}" DESTINATION "lib/clang/${CLANG_FULL_VERSION}/${CLANGRT_SYSTEM}/${llvm_arch}")
     endforeach()
 endforeach()
 add_custom_target(compiler-stage-crt DEPENDS ${crt_deps})

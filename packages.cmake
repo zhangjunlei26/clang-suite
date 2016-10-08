@@ -212,6 +212,7 @@ foreach(arch ${PATH64_ENABLE_ARCHES})
 
     set(ARCH ${arch})
 
+    # FIXME
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/crt_postinstall.xml.cmake.in"
                    "${CMAKE_CURRENT_BINARY_DIR}/crt_postinstall-${arch}.xml"
                    @ONLY)
@@ -226,10 +227,9 @@ endif()
 
 
 foreach(targ ${PATH64_ENABLE_TARGETS})
-    set(arch ${_PATH64_TARGET_ARCH_${targ}})
-    set(bits ${_PATH64_TARGET_BITS_${targ}})
+    set(arch ${_PATH64_TARGET_LLVM_ARCH_${targ}})
 
-    set(dest_dir lib)
+    set(dest_dir lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/${arch})
 
     if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
         path64_add_package_files(base ${dest_dir}

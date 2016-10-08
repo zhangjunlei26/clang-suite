@@ -17,6 +17,8 @@ else()
     set(PSC_FULL_VERSION_DEFAULT "${CLANG_FULL_VERSION}")
 endif()
 SET(PSC_FULL_VERSION "${PSC_FULL_VERSION_DEFAULT}" CACHE STRING "Full version")
+# TODO: set it appopriately
+set(CLANGRT_SYSTEM linux)
 
 option(PATH64_ENABLE_CXX "Enables C++" ON)
 option(PATH64_ENABLE_OPENMP "Enable OpenMP" ON)
