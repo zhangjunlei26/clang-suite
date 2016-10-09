@@ -17,8 +17,15 @@ else()
     set(PSC_FULL_VERSION_DEFAULT "${CLANG_FULL_VERSION}")
 endif()
 SET(PSC_FULL_VERSION "${PSC_FULL_VERSION_DEFAULT}" CACHE STRING "Full version")
-# TODO: set it appopriately
-set(CLANGRT_SYSTEM linux)
+
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+    set(CLANGRT_SYSTEM linux)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "SunOS")
+    set(CLANGRT_SYSTEM solaris)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+else()
+    message(FATAL_ERROR "Unrecognized system for CLANGRT_SYSTEM")
+endif()
 
 option(PATH64_ENABLE_CXX "Enables C++" ON)
 option(PATH64_ENABLE_OPENMP "Enable OpenMP" ON)
