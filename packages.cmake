@@ -172,9 +172,9 @@ foreach(targ ${PATH64_ENABLE_TARGETS})
                                  ${PATH64_STAGE_DIR}/${dest_dir}/crtbegin.o)
 
         path64_add_package_files_no_installer(base ${dest_dir}
-                                              ${PATH64_STAGE_DIR}/${dest_dir}/system-provided/crt1.o
-                                              ${PATH64_STAGE_DIR}/${dest_dir}/system-provided/crti.o
-                                              ${PATH64_STAGE_DIR}/${dest_dir}/system-provided/crtn.o)
+                                              ${PATH64_STAGE_DIR}/${dest_dir}/crt1.o
+                                              ${PATH64_STAGE_DIR}/${dest_dir}/crti.o
+                                              ${PATH64_STAGE_DIR}/${dest_dir}/crtn.o)
     endif()
 
     if(PATH64_ENABLE_CXX)
@@ -250,12 +250,12 @@ if(PATH64_ENABLE_CXX)
                                    clang${CMAKE_EXECUTABLE_SUFFIX} bin clang++${CMAKE_EXECUTABLE_SUFFIX})
                                    
     path64_add_package_files(c++ include
-                                 ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/include/cxxabi.h
+                                 ${PATH64_STAGE_DIR}/include/cxxabi.h
                             )
 
     if(PATH64_ENABLE_LIBCXX)
         path64_add_package_files(c++ include
-                                     ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/include/c++)
+                                     ${PATH64_STAGE_DIR}/include/c++)
     endif()
 
     foreach(targ ${PATH64_ENABLE_TARGETS})

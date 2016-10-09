@@ -5,7 +5,7 @@ file(GLOB_RECURSE headers
      "${PATH64_LIBCXX_SOURCE}/include/*")
 
 set(libcxx_stage_headers)
-set(libcxx_stage_include_dir "${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/include/c++/v1")
+set(libcxx_stage_include_dir "${PATH64_STAGE_DIR}/include/c++/v1")
 
 foreach(header ${headers})
     set(stage_header "${libcxx_stage_include_dir}/${header}")
@@ -155,7 +155,7 @@ if(NOT PATH64_USE_SYSTEM_LIBCXX)
         endif()
         build_libcxx(${targ} OFF)
     endforeach()
-    install(DIRECTORY "${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/include/c++/v1"
+    install(DIRECTORY "${PATH64_STAGE_DIR}/include/c++/v1"
             DESTINATION "include/c++/v1")
 endif()
 
