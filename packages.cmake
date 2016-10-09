@@ -250,12 +250,12 @@ if(PATH64_ENABLE_CXX)
                                    clang${CMAKE_EXECUTABLE_SUFFIX} bin clang++${CMAKE_EXECUTABLE_SUFFIX})
                                    
     path64_add_package_files(c++ include
-                                 ${PATH64_STAGE_DIR}/clang/${CLANG_FULL_VERSION}/include/cxxabi.h
+                                 ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/include/cxxabi.h
                             )
 
     if(PATH64_ENABLE_LIBCXX)
         path64_add_package_files(c++ include
-                                     ${PATH64_STAGE_DIR}/clang/${CLANG_FULL_VERSION}/include/c++)
+                                     ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/include/c++)
     endif()
 
     foreach(targ ${PATH64_ENABLE_TARGETS})
