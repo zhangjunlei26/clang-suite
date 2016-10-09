@@ -347,6 +347,8 @@ foreach(comp ${components})
     endif()
 endforeach()
 
-add_subdirectory(csu)
+if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows" AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    add_subdirectory(csu)
+endif()
 include(packages.cmake)
 
