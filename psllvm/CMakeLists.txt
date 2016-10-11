@@ -106,6 +106,11 @@ set(CLANG_DEFAULT_CXX_STDLIB "libc++" CACHE STRING
   "Default C++ stdlib to use (\"libstdc++\" or \"libc++\", empty for platform default")
 set(CLANG_DEFAULT_RTLIB "compiler-rt" CACHE STRING
   "Default runtime library to use (\"libgcc\" or \"compiler-rt\", empty for platform default)")
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "SunOS")
+  # FIXME: other targets?
+  set(LLVM_DEFAULT_TARGET_TRIPLE "x86_64-pc-solaris" CACHE STRING
+    "Default target for which LLVM will generate code." )
+endif()
 add_subdirectory(${PATH64_LLVM_SOURCE} ${CMAKE_CURRENT_BINARY_DIR}/__build)
 
 
