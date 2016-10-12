@@ -37,10 +37,11 @@ set(pack_desc "The PathScale EKOPath compiler suite is designed to generate code
 foreach(targ ${PATH64_ENABLE_TARGETS})
     set(arch ${_PATH64_TARGET_LLVM_ARCH_${targ}})
 
-    set(dest_dir lib)
+    set(noarch_dest_dir lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM})
+    set(dest_dir ${noarch_dest_dir}/${arch})
 
-    path64_add_package_files(runtime ${dest_dir}/clang/${CLANG_FULL_VERSION}/lib/linux
-                             ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/linux/libclang_rt.builtins-${targ}${CMAKE_SHARED_LIBRARY_SUFFIX}
+    path64_add_package_files(runtime ${noarch_dest_dir}
+                             ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/libclang_rt.builtins-${targ}${CMAKE_SHARED_LIBRARY_SUFFIX}
 			     )
 
     if(PATH64_ENABLE_CXX AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
@@ -246,6 +247,8 @@ path64_add_package(c
 # c++ package
 
 if(PATH64_ENABLE_CXX)
+    set(dest_dir lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/${arch})
+
     path64_add_package_symlink(c++ ${PATH64_STAGE_DIR}/bin/clang++${CMAKE_EXECUTABLE_SUFFIX}
                                    clang${CMAKE_EXECUTABLE_SUFFIX} bin clang++${CMAKE_EXECUTABLE_SUFFIX})
                                    
@@ -261,12 +264,12 @@ if(PATH64_ENABLE_CXX)
     foreach(targ ${PATH64_ENABLE_TARGETS})
         set(arch ${_PATH64_TARGET_LLVM_ARCH_${targ}})
     
-        path64_add_package_files(c++ lib
+        path64_add_package_files(c++ ${dest_dir}
                                  ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/${arch}/libcxxrt.a
                                 )
 
         if(PATH64_ENABLE_LIBCXX AND NOT PATH64_USE_SYSTEM_LIBCXX)
-            path64_add_package_files(c++ lib
+            path64_add_package_files(c++ ${dest_dir}
                                      ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/${arch}/libc++.a)
         endif()
     endforeach()
