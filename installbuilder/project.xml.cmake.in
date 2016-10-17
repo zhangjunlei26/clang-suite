@@ -36,6 +36,66 @@
             </ruleList>
         </licenseParameter>
 
+        <licenseParameter>
+            <ask>@INSTALL_TYPE_INSTALL@</ask>
+            <name>license2</name>
+            <fileEncoding>utf-8</fileEncoding>
+            <wrapText>1</wrapText>
+			<file>@CMAKE_CURRENT_SOURCE_DIR@/ekopath/psllvm/lib/Support/COPYRIGHT.regex</file>
+            <ruleList>
+                <compareText>
+                    <text>${project.installationtype}</text>
+                    <logic>equals</logic>
+                    <value>normal</value>
+                </compareText>
+            </ruleList>
+        </licenseParameter>
+
+        <licenseParameter>
+            <ask>@INSTALL_TYPE_INSTALL@</ask>
+            <name>license3</name>
+            <fileEncoding>utf-8</fileEncoding>
+            <wrapText>1</wrapText>
+			<file>@CMAKE_CURRENT_SOURCE_DIR@/ekopath/psllvm/lib/Target/ARM/LICENSE.TXT</file>
+            <ruleList>
+                <compareText>
+                    <text>${project.installationtype}</text>
+                    <logic>equals</logic>
+                    <value>normal</value>
+                </compareText>
+            </ruleList>
+        </licenseParameter>
+
+        <licenseParameter>
+            <ask>@INSTALL_TYPE_INSTALL@</ask>
+            <name>license4</name>
+            <fileEncoding>utf-8</fileEncoding>
+            <wrapText>1</wrapText>
+			<file>@CMAKE_CURRENT_SOURCE_DIR@/installbuilder/MD5-LICENSE.txt</file>
+            <ruleList>
+                <compareText>
+                    <text>${project.installationtype}</text>
+                    <logic>equals</logic>
+                    <value>normal</value>
+                </compareText>
+            </ruleList>
+        </licenseParameter>
+
+        <licenseParameter>
+            <ask>@INSTALL_TYPE_INSTALL@</ask>
+            <name>license5</name>
+            <fileEncoding>utf-8</fileEncoding>
+            <wrapText>1</wrapText>
+			<file>@CMAKE_CURRENT_SOURCE_DIR@/ekopath/libcxxrt/LICENSE</file>
+            <ruleList>
+                <compareText>
+                    <text>${project.installationtype}</text>
+                    <logic>equals</logic>
+                    <value>normal</value>
+                </compareText>
+            </ruleList>
+        </licenseParameter>
+
         <directoryParameter>
             <name>installdir</name>
             <description>Installer.Parameter.installdir.description</description>
