@@ -153,6 +153,7 @@ function(patch_component comp comp_dir patch_dir)
         endif()
 
         file(GLOB patches RELATIVE "${patch_dir}" "${patch_dir}/*.patch")
+        list(SORT patches)
         foreach(patch ${patches})
             string(REGEX MATCH "^[0-9][0-9][0-9][0-9]" num "${patch}")
             if(NOT num)
