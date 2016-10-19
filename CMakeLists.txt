@@ -65,17 +65,14 @@ endif()
 
 # Repositories
 set(github "git@github.com")
-set(psllvm_repo "${github}:pathscale/psllvm.git")
-set(psllvm_branch "llvm-suite")
-set(binutils_repo "${github}:pathscale/binutils.git")
-set(psclang_repo "${github}:pathscale/psclang-ng.git")
-set(psclang_branch "llvm-suite")
+set(psllvm_repo "http://llvm.org/git/llvm.git")
+set(binutils_repo "https://github.com/pathscale/binutils.git")
+set(psclang_repo "http://llvm.org/git/clang.git")
 set(compiler-rt_repo "http://llvm.org/git/compiler-rt.git")
-set(libunwind_repo "git://git.sv.gnu.org/libunwind.git")
-set(libcxxrt_repo "${github}:pathscale/libcxxrt.git")
-set(openmp-llvm_repo "${github}:llvm-mirror/openmp.git")
+set(libunwind_repo "https://github.com/pathscale/libunwind.git")
+set(libcxxrt_repo "https://github.com/pathscale/libcxxrt.git")
+set(openmp-llvm_repo "http://llvm.org/git/openmp.git")
 set(libcxx_repo "http://llvm.org/git/libcxx.git")
-set(nvblas_repo "${github}:pathscale/nvblas.git")
 
 # Cmake var names
 set(psllvm_var LLVM)
