@@ -162,7 +162,9 @@ function(patch_component comp comp_dir patch_dir)
                 message(STATUS "[${comp}] Applying ${patch}")
                 # if .git exists, use git am to support friendly rebases
                 if(EXISTS "${comp_dir}/.git")
-                    execute_process(COMMAND git am "${patch_dir}/${patch}"
+                    execute_process(COMMAND env GIT_COMMITTER_NAME="clang-suite"
+                                                GIT_COMMITTER_EMAIL="invalid@example.com"
+                                            git am "${patch_dir}/${patch}"
                                     WORKING_DIRECTORY "${comp_dir}"
                                     RESULT_VARIABLE patch_res)
                 else()
