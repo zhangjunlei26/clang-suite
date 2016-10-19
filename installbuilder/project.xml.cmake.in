@@ -7,7 +7,7 @@
     <vendor>PathScale</vendor>
     <outputDirectory>.</outputDirectory>
     <installerFilename>@INSTALLER_FILE_NAME@</installerFilename>
-    <allowComponentSelection>@INSTALL_TYPE_INSTALL@</allowComponentSelection>
+    <allowComponentSelection>0</allowComponentSelection>
     <installationType>@INSTALL_TYPE@</installationType>
 
     <registerWithPackageDatabase>1</registerWithPackageDatabase>
