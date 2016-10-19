@@ -1,0 +1,54 @@
+From 418e45fd83ce89d777807849288b2d1d3dab58fd Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Tue, 18 Oct 2016 20:01:32 +0200
+Subject: [PATCH 13/13] [Driver] Make -static construct semi-static libs, using
+ shared syslibs
+
+---
+ lib/Driver/Tools.cpp | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
+
+diff --git a/lib/Driver/Tools.cpp b/lib/Driver/Tools.cpp
+index e767059..b907f46 100644
+--- a/lib/Driver/Tools.cpp
++++ b/lib/Driver/Tools.cpp
+@@ -8354,18 +8354,17 @@ void solaris::Linker::ConstructJob(Compilation &C, const JobAction &JA,
+     CmdArgs.push_back("_start");
+   }
+ 
+-  if (Args.hasArg(options::OPT_static)) {
++  if (Args.hasArg(options::OPT_static))
+     CmdArgs.push_back("-Bstatic");
+-    CmdArgs.push_back("-dn");
+-  } else {
++  else
+     CmdArgs.push_back("-Bdynamic");
+-    if (Args.hasArg(options::OPT_shared)) {
+-      CmdArgs.push_back("-shared");
+-    } else {
+-      CmdArgs.push_back("--dynamic-linker");
+-      CmdArgs.push_back(
+-          Args.MakeArgString(getToolChain().GetFilePath("ld.so.1")));
+-    }
++
++  if (Args.hasArg(options::OPT_shared)) {
++    CmdArgs.push_back("-shared");
++  } else {
++    CmdArgs.push_back("--dynamic-linker");
++    CmdArgs.push_back(
++        Args.MakeArgString(getToolChain().GetFilePath("ld.so.1")));
+   }
+ 
+   if (Output.isFilename()) {
+@@ -8414,6 +8413,8 @@ void solaris::Linker::ConstructJob(Compilation &C, const JobAction &JA,
+     if (getToolChain().getDriver().CCCIsCXX())
+       getToolChain().AddCXXStdlibLibArgs(Args, CmdArgs);
+     AddRunTimeLibs(getToolChain(), getToolChain().getDriver(), CmdArgs, Args);
++    if (Args.hasArg(options::OPT_static))
++      CmdArgs.push_back("-Bdynamic");
+     CmdArgs.push_back("-lc");
+     if (!Args.hasArg(options::OPT_shared)) {
+       CmdArgs.push_back("-lm");
+-- 
+2.10.1
+

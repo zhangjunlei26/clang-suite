@@ -1,0 +1,32 @@
+From f660ad56764fac47250cbe56f6af2b66d967c977 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Tue, 27 Sep 2016 09:12:51 +0200
+Subject: [PATCH 01/13] [Driver] Disable OpenSUSE rules for SLES10
+
+Disable the OpenSUSE rules for SLES10 as they are incompatible with
+the old binutils on that distribution.
+---
+ lib/Driver/ToolChains.cpp | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/lib/Driver/ToolChains.cpp b/lib/Driver/ToolChains.cpp
+index b51ae1c..dd3b008 100644
+--- a/lib/Driver/ToolChains.cpp
++++ b/lib/Driver/ToolChains.cpp
+@@ -3910,8 +3910,11 @@ static Distro DetectDistro(const Driver &D, llvm::Triple::ArchType Arch) {
+     return UnknownDistro;
+   }
+ 
+-  if (D.getVFS().exists("/etc/SuSE-release"))
+-    return OpenSUSE;
++  File = llvm::MemoryBuffer::getFile("/etc/SuSE-release");
++  if (File)
++    return llvm::StringSwitch<Distro>(File.get()->getBuffer())
++      .StartsWith("SUSE Linux Enterprise Server 10", UnknownDistro)
++      .Default(OpenSUSE);
+ 
+   if (D.getVFS().exists("/etc/exherbo-release"))
+     return Exherbo;
+-- 
+2.10.1
+

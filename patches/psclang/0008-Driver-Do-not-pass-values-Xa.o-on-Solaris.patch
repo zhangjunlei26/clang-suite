@@ -1,0 +1,25 @@
+From 58db7defaa0f27643d76195cf9ec5e059548fd03 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Tue, 11 Oct 2016 13:40:05 -0400
+Subject: [PATCH 08/13] [Driver] Do not pass values-Xa.o on Solaris
+
+---
+ lib/Driver/Tools.cpp | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/lib/Driver/Tools.cpp b/lib/Driver/Tools.cpp
+index 82ebe7a..399c898 100644
+--- a/lib/Driver/Tools.cpp
++++ b/lib/Driver/Tools.cpp
+@@ -8379,8 +8379,6 @@ void solaris::Linker::ConstructJob(Compilation &C, const JobAction &JA,
+ 
+     CmdArgs.push_back(Args.MakeArgString(getToolChain().GetFilePath("crti.o")));
+     CmdArgs.push_back(
+-        Args.MakeArgString(getToolChain().GetFilePath("values-Xa.o")));
+-    CmdArgs.push_back(
+         Args.MakeArgString(getToolChain().GetFilePath("crtbegin.o")));
+   }
+ 
+-- 
+2.10.1
+

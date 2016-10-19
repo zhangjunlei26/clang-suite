@@ -1,0 +1,40 @@
+From 2f78241e90d311352406f1d773ecc71122cba770 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Sun, 16 Oct 2016 21:42:03 +0200
+Subject: [PATCH 12/13] [Driver] Set default linker on Solaris to /usr/bin/ld
+ (to skip GNU)
+
+---
+ lib/Driver/ToolChain.cpp  | 2 ++
+ lib/Driver/ToolChains.cpp | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/lib/Driver/ToolChain.cpp b/lib/Driver/ToolChain.cpp
+index 2de3680..f2af292c 100644
+--- a/lib/Driver/ToolChain.cpp
++++ b/lib/Driver/ToolChain.cpp
+@@ -384,6 +384,8 @@ std::string ToolChain::GetLinkerPath() const {
+       return ldexec;
+   }
+ 
++  if (llvm::sys::path::is_absolute(DefaultLinker))
++    return DefaultLinker;
+   return GetProgramPath(DefaultLinker);
+ }
+ 
+diff --git a/lib/Driver/ToolChains.cpp b/lib/Driver/ToolChains.cpp
+index 0e9a9b6..2db8838 100644
+--- a/lib/Driver/ToolChains.cpp
++++ b/lib/Driver/ToolChains.cpp
+@@ -3767,6 +3767,8 @@ Solaris::Solaris(const Driver &D, const llvm::Triple &Triple,
+   }
+ 
+   addPathIfExists(D, getDriver().SysRoot + LibPath, Paths);
++
++  DefaultLinker = "/usr/bin/ld";
+ }
+ 
+ Tool *Solaris::buildAssembler() const {
+-- 
+2.10.1
+

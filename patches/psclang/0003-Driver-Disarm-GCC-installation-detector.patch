@@ -1,0 +1,26 @@
+From 08e09083e59b3fce70ff3229f15a1706bbfa855d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Fri, 7 Oct 2016 15:57:57 +0200
+Subject: [PATCH 03/13] [Driver] Disarm GCC installation detector
+
+---
+ lib/Driver/ToolChains.cpp | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/lib/Driver/ToolChains.cpp b/lib/Driver/ToolChains.cpp
+index 8bd664e..7896b44 100644
+--- a/lib/Driver/ToolChains.cpp
++++ b/lib/Driver/ToolChains.cpp
+@@ -1386,6 +1386,9 @@ static llvm::StringRef getGCCToolchainDir(const ArgList &Args) {
+ void Generic_GCC::GCCInstallationDetector::init(
+     const llvm::Triple &TargetTriple, const ArgList &Args,
+     ArrayRef<std::string> ExtraTripleAliases) {
++  // PathScale: we don't want anything to do with system gcc
++  return;
++
+   llvm::Triple BiarchVariantTriple = TargetTriple.isArch32Bit()
+                                          ? TargetTriple.get64BitArchVariant()
+                                          : TargetTriple.get32BitArchVariant();
+-- 
+2.10.1
+

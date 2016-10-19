@@ -1,0 +1,37 @@
+From 748bedbbbea11d5b28c946c22b8774c077bcedb2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Sat, 8 Oct 2016 22:41:06 +0200
+Subject: [PATCH 05/13] [Driver] Always add -L paths for clang runtime
+ directories
+
+---
+ lib/Driver/ToolChain.cpp | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/lib/Driver/ToolChain.cpp b/lib/Driver/ToolChain.cpp
+index fb81fb9..6776a36 100644
+--- a/lib/Driver/ToolChain.cpp
++++ b/lib/Driver/ToolChain.cpp
+@@ -74,6 +74,19 @@ ToolChain::ToolChain(const Driver &D, const llvm::Triple &T,
+     if (!isThreadModelSupported(A->getValue()))
+       D.Diag(diag::err_drv_invalid_thread_model_for_target)
+           << A->getValue() << A->getAsString(Args);
++
++  // add -L paths based on resource dir
++  StringRef OSLibName = getTriple().isOSFreeBSD() ? "freebsd" : getOS();
++
++  SmallString<128> ArchP(D.ResourceDir);
++  llvm::sys::path::append(ArchP, "lib", OSLibName, llvm::Triple::getArchTypeName(getArch()));
++  if (llvm::sys::fs::exists(Twine(ArchP)))
++    getFilePaths().push_back(ArchP.str());
++
++  SmallString<128> P(D.ResourceDir);
++  llvm::sys::path::append(P, "lib", OSLibName);
++  if (llvm::sys::fs::exists(Twine(P)))
++    getFilePaths().push_back(P.str());
+ }
+ 
+ ToolChain::~ToolChain() {
+-- 
+2.10.1
+

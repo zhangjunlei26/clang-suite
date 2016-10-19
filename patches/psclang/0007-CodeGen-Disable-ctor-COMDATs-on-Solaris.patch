@@ -1,0 +1,26 @@
+From 7b14077615a26c1ad739690899ce3654b4c15ba3 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Tue, 11 Oct 2016 13:30:39 -0400
+Subject: [PATCH 07/13] [CodeGen] Disable ctor COMDATs on Solaris
+
+---
+ lib/CodeGen/ItaniumCXXABI.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/lib/CodeGen/ItaniumCXXABI.cpp b/lib/CodeGen/ItaniumCXXABI.cpp
+index 24d187f..65c4422 100644
+--- a/lib/CodeGen/ItaniumCXXABI.cpp
++++ b/lib/CodeGen/ItaniumCXXABI.cpp
+@@ -3465,7 +3465,8 @@ static StructorCodegen getCodegenToUse(CodeGenModule &CGM,
+ 
+   if (llvm::GlobalValue::isWeakForLinker(Linkage)) {
+     // Only ELF supports COMDATs with arbitrary names (C5/D5).
+-    if (CGM.getTarget().getTriple().isOSBinFormatELF())
++    // However, those COMDATs break Solaris linker.
++    if (CGM.getTarget().getTriple().isOSBinFormatELF() && CGM.getTarget().getTriple().getOS() != llvm::Triple::Solaris)
+       return StructorCodegen::COMDAT;
+     return StructorCodegen::Emit;
+   }
+-- 
+2.10.1
+

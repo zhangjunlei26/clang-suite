@@ -142,6 +142,44 @@ function(update_component comp comp_dir)
 endfunction()
 
 
+# Patches component (applies all missing patches)
+function(patch_component comp comp_dir patch_dir)
+    if(EXISTS "${patch_dir}")
+        set(state_file "${comp_dir}/.patch_applied")
+        if(EXISTS ${state_file})
+            file(READ ${state_file} last_applied)
+        else()
+            set(last_applied 0000)
+        endif()
+
+        file(GLOB patches RELATIVE "${patch_dir}" "${patch_dir}/*.patch")
+        foreach(patch ${patches})
+            string(REGEX MATCH "^[0-9][0-9][0-9][0-9]" num "${patch}")
+            if(NOT num)
+                message(FATAL_ERROR "Incorrect patch name: ${patch}")
+            elseif(${num} GREATER ${last_applied})
+                message(STATUS "[${comp}] Applying ${patch}")
+                # if .git exists, use git am to support friendly rebases
+                if(EXISTS "${comp_dir}/.git")
+                    execute_process(COMMAND git am "${patch_dir}/${patch}"
+                                    WORKING_DIRECTORY "${comp_dir}"
+                                    RESULT_VARIABLE patch_res)
+                else()
+                    execute_process(COMMAND patch -p1
+                                    WORKING_DIRECTORY "${comp_dir}"
+                                    INPUT_FILE "${patch_dir}/${patch}"
+                                    RESULT_VARIABLE patch_res)
+                endif()
+                if(NOT ${patch_res} EQUAL 0)
+                    message(FATAL_ERROR "Applying ${patch} failed")
+                endif()
+                file(WRITE ${state_file} ${num})
+            endif()
+        endforeach()
+    endif()
+endfunction()
+
+
 # Checks component source directory. Clones/updates sources if needed.
 # set PATH64_${comp}_var}
 function(check_component comp)
@@ -171,6 +209,8 @@ function(check_component comp)
 
     message(STATUS "Using ${comp} sources from '${comp_src}'")
     set(${comp_src_var} "${comp_src}" PARENT_SCOPE)
+
+    patch_component(${comp} "${comp_src}" "${CMAKE_CURRENT_SOURCE_DIR}/patches/${comp}")
 endfunction()
 
 

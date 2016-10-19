@@ -1,0 +1,46 @@
+From bcce055ac0db2d8472fa3ac0044862a0e4b128dd Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Tue, 11 Oct 2016 17:18:03 -0400
+Subject: [PATCH 09/13] [Driver] Enable compiler-rt support on Solaris
+
+---
+ lib/Driver/Tools.cpp | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/lib/Driver/Tools.cpp b/lib/Driver/Tools.cpp
+index 399c898..e767059 100644
+--- a/lib/Driver/Tools.cpp
++++ b/lib/Driver/Tools.cpp
+@@ -53,6 +53,9 @@ using namespace clang::driver::tools;
+ using namespace clang;
+ using namespace llvm::opt;
+ 
++static void AddRunTimeLibs(const ToolChain &TC, const Driver &D,
++                           ArgStringList &CmdArgs, const ArgList &Args);
++
+ static void handleTargetFeaturesGroup(const ArgList &Args,
+                                       std::vector<StringRef> &Features,
+                                       OptSpecifier Group) {
+@@ -8410,10 +8413,9 @@ void solaris::Linker::ConstructJob(Compilation &C, const JobAction &JA,
+   if (!Args.hasArg(options::OPT_nostdlib, options::OPT_nodefaultlibs)) {
+     if (getToolChain().getDriver().CCCIsCXX())
+       getToolChain().AddCXXStdlibLibArgs(Args, CmdArgs);
+-    CmdArgs.push_back("-lgcc_s");
++    AddRunTimeLibs(getToolChain(), getToolChain().getDriver(), CmdArgs, Args);
+     CmdArgs.push_back("-lc");
+     if (!Args.hasArg(options::OPT_shared)) {
+-      CmdArgs.push_back("-lgcc");
+       CmdArgs.push_back("-lm");
+     }
+   }
+@@ -9608,6 +9610,7 @@ static void AddRunTimeLibs(const ToolChain &TC, const Driver &D,
+     case llvm::Triple::Win32:
+     case llvm::Triple::Linux:
+     case llvm::Triple::Fuchsia:
++    case llvm::Triple::Solaris:
+       addClangRT(TC, Args, CmdArgs);
+       break;
+     }
+-- 
+2.10.1
+
