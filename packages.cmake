@@ -222,8 +222,8 @@ path64_add_package(base
 
 path64_add_package_files(c bin/
                          "${PATH64_STAGE_DIR}/bin/clang")
-path64_add_package_files(c lib/
-                         "${PATH64_STAGE_DIR}/lib/clang")
+path64_add_package_files(c lib/clang/${CLANG_FULL_VERSION}
+                         "${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/include")
 
 path64_set_package_deps(c "runtime" "base")
 path64_add_package(c
