@@ -41,7 +41,8 @@ foreach(targ ${PATH64_ENABLE_TARGETS})
     set(dest_dir ${noarch_dest_dir}/${arch})
 
     path64_add_package_files(runtime ${noarch_dest_dir}
-                             ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/libclang_rt.builtins-${targ}${CMAKE_SHARED_LIBRARY_SUFFIX}
+                             ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/libclang_rt.builtins-${arch}.a
+                             ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/libclang_rt.builtins-${arch}${CMAKE_SHARED_LIBRARY_SUFFIX}
 			     )
 
     if(PATH64_ENABLE_CXX AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
