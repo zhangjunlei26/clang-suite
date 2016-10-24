@@ -44,6 +44,12 @@ foreach(targ ${PATH64_ENABLE_TARGETS})
                              ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/libclang_rt.builtins-${arch}.a
                              ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/libclang_rt.builtins-${arch}${CMAKE_SHARED_LIBRARY_SUFFIX}
 			     )
+    
+    path64_set_sanitizers_for_arch(${arch} ${targ})
+    foreach(lib ${PATH64_SANITIZER_LIBS_${targ}})
+        path64_add_package_files(runtime ${noarch_dest_dir}
+                                 ${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/lib/${CLANGRT_SYSTEM}/libclang_rt.${lib}-${arch}.a)
+    endforeach()
 
     if(PATH64_ENABLE_CXX AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
         path64_add_package_files(runtime ${dest_dir}

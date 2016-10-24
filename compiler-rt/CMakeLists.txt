@@ -214,3 +214,4 @@ endif()
 # [[debug|optimized|general]
 #TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${PROJECT_NAME}-Common optimized ${PROJECT_NAME}-i386 )
 
+add_subdirectory(sanitizers)
