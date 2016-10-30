@@ -1,14 +1,14 @@
-From b022116b6b50908a1c566edf28d651b749450da4 Mon Sep 17 00:00:00 2001
+From 859a997e842dce389367ea90868292b2ececf556 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
 Date: Thu, 13 Oct 2016 20:02:41 +0200
-Subject: [PATCH 10/13] [Driver] Copy libc++ header support to Solaris
+Subject: [PATCH 09/13] Copy libc++ header support to Solaris
 
 ---
  lib/Driver/ToolChains.cpp | 21 +++++++++++++++++++++
  1 file changed, 21 insertions(+)
 
 diff --git a/lib/Driver/ToolChains.cpp b/lib/Driver/ToolChains.cpp
-index 5ab98e6..0e9a9b6 100644
+index 062c573..5f711bf 100644
 --- a/lib/Driver/ToolChains.cpp
 +++ b/lib/Driver/ToolChains.cpp
 @@ -42,6 +42,8 @@ using namespace clang::driver::toolchains;
@@ -20,7 +20,7 @@ index 5ab98e6..0e9a9b6 100644
  MachO::MachO(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
      : ToolChain(D, Triple, Args) {
    // We expect 'as', 'ld', etc. to be adjacent to our install dir.
-@@ -3779,6 +3781,25 @@ void Solaris::AddClangCXXStdlibIncludeArgs(const ArgList &DriverArgs,
+@@ -3816,6 +3818,25 @@ void Solaris::AddClangCXXStdlibIncludeArgs(const ArgList &DriverArgs,
        DriverArgs.hasArg(options::OPT_nostdincxx))
      return;
  
@@ -45,7 +45,7 @@ index 5ab98e6..0e9a9b6 100644
 +
    // Include the support directory for things like xlocale and fudged system
    // headers.
-   addSystemInclude(DriverArgs, CC1Args, "/usr/include/c++/v1/support/solaris");
+   // FIXME: This is a weird mix of libc++ and libstdc++. We should also be
 -- 
 2.10.1
 

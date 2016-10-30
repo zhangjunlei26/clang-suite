@@ -1,7 +1,7 @@
-From b47e9189367a97e2664061eb5f4ebf3534bf96a9 Mon Sep 17 00:00:00 2001
+From 5d7d6f1eedb81347ff383f495c89cb67f494af2a Mon Sep 17 00:00:00 2001
 From: miguelzf <eligmu@gmail.com>
 Date: Sun, 2 Oct 2016 11:00:41 -0400
-Subject: [PATCH 02/13] [Driver] Link C++ to -lcxxrt -leh
+Subject: [PATCH 01/13] Link C++ to -lcxxrt -leh
 
 ---
  lib/Driver/ToolChain.cpp  |  2 ++
@@ -10,10 +10,10 @@ Subject: [PATCH 02/13] [Driver] Link C++ to -lcxxrt -leh
  3 files changed, 16 insertions(+), 7 deletions(-)
 
 diff --git a/lib/Driver/ToolChain.cpp b/lib/Driver/ToolChain.cpp
-index 9023265..fb81fb9 100644
+index f640a85..eb182d1 100644
 --- a/lib/Driver/ToolChain.cpp
 +++ b/lib/Driver/ToolChain.cpp
-@@ -646,6 +646,8 @@ void ToolChain::AddCXXStdlibLibArgs(const ArgList &Args,
+@@ -656,6 +656,8 @@ void ToolChain::AddCXXStdlibLibArgs(const ArgList &Args,
    switch (Type) {
    case ToolChain::CST_Libcxx:
      CmdArgs.push_back("-lc++");
@@ -23,10 +23,10 @@ index 9023265..fb81fb9 100644
  
    case ToolChain::CST_Libstdcxx:
 diff --git a/lib/Driver/ToolChains.cpp b/lib/Driver/ToolChains.cpp
-index dd3b008..8bd664e 100644
+index 2062ee4..18a48b9 100644
 --- a/lib/Driver/ToolChains.cpp
 +++ b/lib/Driver/ToolChains.cpp
-@@ -736,6 +736,7 @@ void DarwinClang::AddCXXStdlibLibArgs(const ArgList &Args,
+@@ -744,6 +744,7 @@ void DarwinClang::AddCXXStdlibLibArgs(const ArgList &Args,
    switch (Type) {
    case ToolChain::CST_Libcxx:
      CmdArgs.push_back("-lc++");
@@ -34,7 +34,7 @@ index dd3b008..8bd664e 100644
      break;
  
    case ToolChain::CST_Libstdcxx:
-@@ -2939,8 +2940,8 @@ void MipsLLVMToolChain::AddCXXStdlibLibArgs(const ArgList &Args,
+@@ -3053,8 +3054,8 @@ void MipsLLVMToolChain::AddCXXStdlibLibArgs(const ArgList &Args,
           "Only -lc++ (aka libxx) is suported in this toolchain.");
  
    CmdArgs.push_back("-lc++");
@@ -45,7 +45,7 @@ index dd3b008..8bd664e 100644
  }
  
  std::string MipsLLVMToolChain::getCompilerRT(const ArgList &Args,
-@@ -3241,6 +3242,8 @@ void NaClToolChain::AddCXXStdlibLibArgs(const ArgList &Args,
+@@ -3354,6 +3355,8 @@ void NaClToolChain::AddCXXStdlibLibArgs(const ArgList &Args,
    // if the value is libc++, and emits an error for other values.
    GetCXXStdlibType(Args);
    CmdArgs.push_back("-lc++");
@@ -53,8 +53,8 @@ index dd3b008..8bd664e 100644
 +  CmdArgs.push_back("-leh");
  }
  
- void NaClToolChain::AddClangCXXStdlibIncludeArgs(const ArgList &DriverArgs,
-@@ -3358,8 +3361,8 @@ void CloudABI::AddClangCXXStdlibIncludeArgs(const ArgList &DriverArgs,
+ std::string NaClToolChain::findLibCxxIncludePath() const {
+@@ -3454,8 +3457,8 @@ std::string CloudABI::findLibCxxIncludePath() const {
  void CloudABI::AddCXXStdlibLibArgs(const ArgList &Args,
                                     ArgStringList &CmdArgs) const {
    CmdArgs.push_back("-lc++");
@@ -65,7 +65,7 @@ index dd3b008..8bd664e 100644
  }
  
  Tool *CloudABI::buildLinker() const {
-@@ -3489,7 +3492,7 @@ void Bitrig::AddCXXStdlibLibArgs(const ArgList &Args,
+@@ -3549,7 +3552,7 @@ void Bitrig::AddCXXStdlibLibArgs(const ArgList &Args,
    switch (GetCXXStdlibType(Args)) {
    case ToolChain::CST_Libcxx:
      CmdArgs.push_back("-lc++");
@@ -74,7 +74,7 @@ index dd3b008..8bd664e 100644
      CmdArgs.push_back("-lpthread");
      break;
    case ToolChain::CST_Libstdcxx:
-@@ -3548,6 +3551,8 @@ void FreeBSD::AddCXXStdlibLibArgs(const ArgList &Args,
+@@ -3595,6 +3598,8 @@ void FreeBSD::AddCXXStdlibLibArgs(const ArgList &Args,
    switch (Type) {
    case ToolChain::CST_Libcxx:
      CmdArgs.push_back(Profiling ? "-lc++_p" : "-lc++");
@@ -84,10 +84,10 @@ index dd3b008..8bd664e 100644
  
    case ToolChain::CST_Libstdcxx:
 diff --git a/lib/Driver/Tools.cpp b/lib/Driver/Tools.cpp
-index db47384..2646b95 100644
+index efc6445..cf93a2c 100644
 --- a/lib/Driver/Tools.cpp
 +++ b/lib/Driver/Tools.cpp
-@@ -3243,9 +3243,11 @@ static void linkXRayRuntimeDeps(const ToolChain &TC, const ArgList &Args,
+@@ -3328,9 +3328,11 @@ static void linkXRayRuntimeDeps(const ToolChain &TC, const ArgList &Args,
    CmdArgs.push_back("-lrt");
    CmdArgs.push_back("-lm");
    CmdArgs.push_back("-latomic");
