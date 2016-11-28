@@ -1,4 +1,9 @@
 function(path64_set_sanitizers_for_arch arch targ)
+    # compiler-rt doesn't seem to support SunOS at all atm
+    if (${CMAKE_SYSTEM_NAME} MATCHES "SunOS")
+        return()
+    endif()
+
     set(include_libs)
     # keep in sync with arch logic in ekopath/compiler-rt/cmake/config-ix.cmake
     if (${arch} STREQUAL "x86_64")
@@ -79,6 +84,11 @@ endfunction()
 
 
 function(build_clangrt_sanitizers)
+    # compiler-rt doesn't seem to support SunOS at all atm
+    if (${CMAKE_SYSTEM_NAME} MATCHES "SunOS")
+        return()
+    endif()
+
     set(build_dir "${CMAKE_CURRENT_BINARY_DIR}/build")
 
     # run cmake 
