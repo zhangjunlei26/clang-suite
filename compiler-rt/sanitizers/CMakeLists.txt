@@ -97,6 +97,8 @@ function(build_clangrt_sanitizers)
     list(APPEND cmd_line "-DCMAKE_CXX_COMPILER=${Path64_BINARY_DIR}/bin/clang++")
     list(APPEND cmd_line "-DCOMPILER_RT_BUILD_BUILTINS=OFF")
     list(APPEND cmd_line "-DLLVM_CONFIG_PATH=${CMAKE_BINARY_DIR}/psllvm/__build/bin/llvm-config")
+    list(APPEND cmd_line "-DCMAKE_C_FLAGS=")
+    list(APPEND cmd_line "-DCMAKE_CXX_FLAGS=")
 
     make_directory("${build_dir}")
 
