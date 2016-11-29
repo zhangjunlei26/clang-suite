@@ -1,6 +1,7 @@
 function(path64_set_sanitizers_for_arch arch targ)
     # compiler-rt doesn't seem to support SunOS at all atm
-    if (${CMAKE_SYSTEM_NAME} MATCHES "SunOS")
+	# Darwin has custom build rules that do not work for us
+	if (${CMAKE_SYSTEM_NAME} MATCHES "SunOS" OR APPLE)
         return()
     endif()
 
@@ -102,7 +103,8 @@ endfunction()
 
 function(build_clangrt_sanitizers)
     # compiler-rt doesn't seem to support SunOS at all atm
-    if (${CMAKE_SYSTEM_NAME} MATCHES "SunOS")
+	# Darwin has custom build rules that do not work for us
+	if (${CMAKE_SYSTEM_NAME} MATCHES "SunOS" OR APPLE)
         return()
     endif()
 
@@ -120,13 +122,6 @@ function(build_clangrt_sanitizers)
     list(APPEND cmd_line "-DLLVM_CONFIG_PATH=${CMAKE_BINARY_DIR}/psllvm/__build/bin/llvm-config")
     list(APPEND cmd_line "-DCMAKE_C_FLAGS=${COMPILER_RT_SANITIZER_FLAGS}")
     list(APPEND cmd_line "-DCMAKE_CXX_FLAGS=${COMPILER_RT_SANITIZER_FLAGS}")
-    if (APPLE)
-        set(OSX_ARCHES)
-        foreach(targ ${PATH64_ENABLE_TARGETS})
-            list(APPEND OSX_ARCHES ${_PATH64_TARGET_LLVM_ARCH_${targ}})
-        endforeach()
-        list(APPEND cmd_line "-DDARWIN_osx_ARCHS=${OSX_ARCHES}")
-    endif()
 
     make_directory("${build_dir}")
 
