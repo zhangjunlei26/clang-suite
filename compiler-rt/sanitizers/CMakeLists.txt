@@ -21,6 +21,7 @@ function(path64_set_sanitizers_for_arch arch targ)
             tsan tsan_cxx                           # TSAN
             ubsan_standalone ubsan_standalone_cxx   # UBSAN
         )
+        # specific to x86_64 Linux
         if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
             list(APPEND include_libs dd dyndd)
         endif()
@@ -76,6 +77,22 @@ function(path64_set_sanitizers_for_arch arch targ)
             stats stats_client                      # SANITIZER_COMMON
             tsan tsan_cxx                           # TSAN
             ubsan_standalone ubsan_standalone_cxx   # UBSAN
+        )
+    endif()
+
+    if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+        # Linux-specific sanitizers
+        list(REMOVE_ITEM include_libs
+            cfi cfi_diag                            # CFI
+            dfsan                                   # DFSAN
+            esan                                    # ESAN
+            msan msan_cxx                           # MSAN
+            scudo                                   # SCUDO
+        )
+    endif()
+    if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Linux|FreeBSD")
+        list(REMOVE_ITEM include_libs
+            lsan                                    # LSAN
         )
     endif()
 
