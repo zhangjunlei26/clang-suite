@@ -24,7 +24,7 @@ function(path64_set_sanitizers_for_arch arch targ)
         )
         # specific to x86_64 Linux
         if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-            list(APPEND include_libs dd dyndd)
+            list(APPEND include_libs dd)
         endif()
     elseif (${arch} STREQUAL "i386")
         list(APPEND include_libs
