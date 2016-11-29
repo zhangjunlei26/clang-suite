@@ -108,6 +108,9 @@ function(build_clangrt_sanitizers)
 
     set(build_dir "${CMAKE_CURRENT_BINARY_DIR}/build")
 
+    set(COMPILER_RT_SANITIZER_FLAGS "" CACHE STRING
+        "Flags used to build sanitizer libraries")
+
     # run cmake 
     set(cmd_line "${CMAKE_COMMAND}" "${PATH64_COMPILER_RT_SOURCE}" -G "${CMAKE_GENERATOR}")
     list(APPEND cmd_line "-DCMAKE_C_COMPILER=${Path64_BINARY_DIR}/bin/clang")
@@ -115,8 +118,8 @@ function(build_clangrt_sanitizers)
     list(APPEND cmd_line "-DCOMPILER_RT_BUILD_BUILTINS=OFF")
     list(APPEND cmd_line "-DCOMPILER_RT_BUILD_XRAY=OFF")
     list(APPEND cmd_line "-DLLVM_CONFIG_PATH=${CMAKE_BINARY_DIR}/psllvm/__build/bin/llvm-config")
-    list(APPEND cmd_line "-DCMAKE_C_FLAGS=")
-    list(APPEND cmd_line "-DCMAKE_CXX_FLAGS=")
+    list(APPEND cmd_line "-DCMAKE_C_FLAGS=${COMPILER_RT_SANITIZER_FLAGS}")
+    list(APPEND cmd_line "-DCMAKE_CXX_FLAGS=${COMPILER_RT_SANITIZER_FLAGS}")
     if (APPLE)
         set(OSX_ARCHES)
         foreach(targ ${PATH64_ENABLE_TARGETS})
