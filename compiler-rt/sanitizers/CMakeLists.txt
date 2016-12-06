@@ -145,7 +145,17 @@ function(build_clangrt_sanitizers)
                               "${build_dir}/lib/${CLANGRT_SYSTEM}/*.a"
                               "${stage_path}/"
                       DEPENDS compiler-rt-sanitizers-make)
-	add_dependencies(compiler-stage-extra-libs-CXX compiler-rt-sanitizers-copy)
+    add_dependencies(compiler-stage-extra-libs-CXX compiler-rt-sanitizers-copy)
+
+    # copy headers to stage dir
+    set(stage_path "${PATH64_STAGE_DIR}/lib/clang/${CLANG_FULL_VERSION}/include/sanitizer")
+    file(MAKE_DIRECTORY "${stage_path}")
+    add_custom_target(compiler-rt-sanitizers-copy-includes
+                      COMMAND ${CMAKE_COMMAND} -E copy
+                              "${build_dir}/include/sanitizer/*.h"
+                              "${stage_path}/"
+                      DEPENDS compiler-rt-sanitizers-make)
+    add_dependencies(compiler-stage-extra-libs-CXX compiler-rt-sanitizers-copy-includes)
 endfunction()
 
 build_clangrt_sanitizers()
