@@ -1,0 +1,42 @@
+From 447cb184a4adac47094acdcc9fc82f24e297ce94 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Sun, 16 Oct 2016 21:42:03 +0200
+Subject: [PATCH 12/14] Set default linker on Solaris to /usr/bin/ld (to skip
+ GNU)
+
+---
+ lib/Driver/ToolChain.cpp | 2 ++
+ lib/Driver/ToolChains.h  | 4 ++++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/lib/Driver/ToolChain.cpp b/lib/Driver/ToolChain.cpp
+index c3dc963534..bc06cc5a7a 100644
+--- a/lib/Driver/ToolChain.cpp
++++ b/lib/Driver/ToolChain.cpp
+@@ -392,6 +392,8 @@ std::string ToolChain::GetLinkerPath() const {
+   if (ldexec && *ldexec)
+     return ldexec;
+ 
++  if (llvm::sys::path::is_absolute(getDefaultLinker()))
++    return getDefaultLinker();
+   return GetProgramPath(getDefaultLinker());
+ }
+ 
+diff --git a/lib/Driver/ToolChains.h b/lib/Driver/ToolChains.h
+index 7dab08915d..65c8098454 100644
+--- a/lib/Driver/ToolChains.h
++++ b/lib/Driver/ToolChains.h
+@@ -685,6 +685,10 @@ public:
+ 
+   unsigned GetDefaultDwarfVersion() const override { return 2; }
+ 
++  const char *getDefaultLinker() const override {
++    return "/usr/bin/ld"; // use Solaris link editor, not GNU
++  }
++
+ protected:
+   Tool *buildAssembler() const override;
+   Tool *buildLinker() const override;
+-- 
+2.11.0
+

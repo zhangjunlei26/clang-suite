@@ -1,0 +1,27 @@
+From d3733d73a747507fa4d8a8275259b644fbcd8e94 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Sun, 16 Oct 2016 19:54:13 +0200
+Subject: [PATCH 11/14] Support overriding linker via LDEXEC
+
+---
+ lib/Driver/ToolChain.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/lib/Driver/ToolChain.cpp b/lib/Driver/ToolChain.cpp
+index c648c4b3ab..c3dc963534 100644
+--- a/lib/Driver/ToolChain.cpp
++++ b/lib/Driver/ToolChain.cpp
+@@ -388,6 +388,10 @@ std::string ToolChain::GetLinkerPath() const {
+   if (A)
+     getDriver().Diag(diag::err_drv_invalid_linker_name) << A->getAsString(Args);
+ 
++  const char* ldexec = getenv("LDEXEC");
++  if (ldexec && *ldexec)
++    return ldexec;
++
+   return GetProgramPath(getDefaultLinker());
+ }
+ 
+-- 
+2.11.0
+
