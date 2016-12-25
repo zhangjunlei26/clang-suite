@@ -1,12 +1,27 @@
-From d3733d73a747507fa4d8a8275259b644fbcd8e94 Mon Sep 17 00:00:00 2001
+From a89c3eea968ab9e1331bc367824a2c2f6df1a0f9 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
 Date: Sun, 16 Oct 2016 19:54:13 +0200
-Subject: [PATCH 11/14] Support overriding linker via LDEXEC
+Subject: [PATCH 1/4] Support overriding linker via LDEXEC
 
 ---
+ lib/Driver/Driver.cpp    | 3 +++
  lib/Driver/ToolChain.cpp | 4 ++++
- 1 file changed, 4 insertions(+)
+ 2 files changed, 7 insertions(+)
 
+diff --git a/lib/Driver/Driver.cpp b/lib/Driver/Driver.cpp
+index 28ea8c33ae..e4f746f6c7 100644
+--- a/lib/Driver/Driver.cpp
++++ b/lib/Driver/Driver.cpp
+@@ -3598,6 +3598,9 @@ static bool ScanDirForExecutable(SmallString<128> &Dir,
+ }
+ 
+ std::string Driver::GetProgramPath(StringRef Name, const ToolChain &TC) const {
++  if (llvm::sys::path::is_absolute(Name))
++    return Name;
++
+   SmallVector<std::string, 2> TargetSpecificExecutables;
+   generatePrefixedToolNames(Name, TC, TargetSpecificExecutables);
+ 
 diff --git a/lib/Driver/ToolChain.cpp b/lib/Driver/ToolChain.cpp
 index c648c4b3ab..c3dc963534 100644
 --- a/lib/Driver/ToolChain.cpp
