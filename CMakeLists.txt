@@ -8,7 +8,7 @@ endif()
 INCLUDE(CheckCXXCompilerFlag)
 
 # TODO: detect clang version from sources
-set(CLANG_FULL_VERSION "4.0.0")
+set(CLANG_FULL_VERSION "5.0.0")
 
 set(PSC_BUILD_NO "" CACHE STRING "Build number (appended to default version)")
 if(PSC_BUILD_NO)
