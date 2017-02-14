@@ -259,7 +259,7 @@ if(PATH64_ENABLE_CXX)
     path64_add_package_symlink(c++ ${PATH64_STAGE_DIR}/bin/clang++${CMAKE_EXECUTABLE_SUFFIX}
                                    clang${CMAKE_EXECUTABLE_SUFFIX} bin clang++${CMAKE_EXECUTABLE_SUFFIX})
                                    
-    path64_add_package_files(c++ include
+    path64_add_package_files(c++ include/c++/v1
                                  ${PATH64_STAGE_DIR}/include/cxxabi.h
                             )
 
