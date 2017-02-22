@@ -1,0 +1,81 @@
+From bfdeeb5de1cb1f1b1e47e906fb217e0dea7cfd38 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Wed, 22 Feb 2017 17:30:28 +0100
+Subject: [PATCH] [Support] Provide linux/magic.h fallback for older kernels
+
+The function for distinguishing local and remote files added in r295768
+unconditionally uses linux/magic.h header to provide necessary
+filesystem magic numbers. However, in kernel headers predating 2.6.18
+the magic numbers are spread throughout multiple include files.
+Furthermore, LLVM did not require kernel headers being installed so far.
+
+To increase the portability across different versions of Linux kernel
+and different Linux systems, add CMake header checks for linux/magic.h
+and -- if it is missing -- the linux/nfs_fs.h and linux/smb.h headers
+which contained the numbers previously.
+
+Furthermore, since the numbers are static and the feature does not seem
+critical enough to make LLVM require kernel headers at all, add fallback
+constants for the case when none of the necessary headers is available.
+---
+ cmake/config-ix.cmake     |  9 +++++++++
+ lib/Support/Unix/Path.inc | 15 +++++++++++++++
+ 2 files changed, 24 insertions(+)
+
+diff --git a/cmake/config-ix.cmake b/cmake/config-ix.cmake
+index e2b4bf999a4..42af23d377f 100755
+--- a/cmake/config-ix.cmake
++++ b/cmake/config-ix.cmake
+@@ -88,6 +88,15 @@ if(APPLE)
+     HAVE_CRASHREPORTER_INFO)
+ endif()
+ 
++if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
++  check_include_file(linux/magic.h HAVE_LINUX_MAGIC_H)
++  if(NOT HAVE_LINUX_MAGIC_H)
++    # older kernels use split files
++    check_include_file(linux/nfs_fs.h HAVE_LINUX_NFS_FS_H)
++    check_include_file(linux/smb.h HAVE_LINUX_SMB_H)
++  endif()
++endif()
++
+ # library checks
+ if( NOT PURE_WINDOWS )
+   check_library_exists(pthread pthread_create "" HAVE_LIBPTHREAD)
+diff --git a/lib/Support/Unix/Path.inc b/lib/Support/Unix/Path.inc
+index 4b35c7b4687..56fa01ab512 100644
+--- a/lib/Support/Unix/Path.inc
++++ b/lib/Support/Unix/Path.inc
+@@ -76,7 +76,16 @@
+ #include <sys/param.h>
+ #include <sys/mount.h>
+ #elif defined(__linux__)
++#if defined(HAVE_LINUX_MAGIC_H)
+ #include <linux/magic.h>
++#else
++#if defined(HAVE_LINUX_NFS_FS_H)
++#include <linux/nfs_fs.h>
++#endif
++#if defined(HAVE_LINUX_SMB_H)
++#include <linux/smb.h>
++#endif
++#endif
+ #include <sys/vfs.h>
+ #else
+ #include <sys/mount.h>
+@@ -346,6 +355,12 @@ std::error_code remove(const Twine &path, bool IgnoreNonExisting) {
+ 
+ static bool is_local_impl(struct STATVFS &Vfs) {
+ #if defined(__linux__)
++#ifndef NFS_SUPER_MAGIC
++#define NFS_SUPER_MAGIC 0x6969
++#endif
++#ifndef SMB_SUPER_MAGIC
++#define SMB_SUPER_MAGIC 0x517B
++#endif
+ #ifndef CIFS_MAGIC_NUMBER
+ #define CIFS_MAGIC_NUMBER 0xFF534D42
+ #endif
+-- 
+2.11.1
+
