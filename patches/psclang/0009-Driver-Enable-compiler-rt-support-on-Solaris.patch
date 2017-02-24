@@ -1,28 +1,26 @@
-From 6ec9f830f457786f8d59e136c173a36604c587b5 Mon Sep 17 00:00:00 2001
+From 01961fda4c52f077cc03f9b55ca1901bbec59a5b Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
 Date: Tue, 11 Oct 2016 17:18:03 -0400
 Subject: [PATCH 08/13] Enable compiler-rt support on Solaris
 
 ---
- lib/Driver/Tools.cpp | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ lib/Driver/Tools.cpp | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/lib/Driver/Tools.cpp b/lib/Driver/Tools.cpp
-index 366deae329..632b24d7eb 100644
+index 366deae329..83e3478dab 100644
 --- a/lib/Driver/Tools.cpp
 +++ b/lib/Driver/Tools.cpp
-@@ -53,7 +53,10 @@ using namespace clang::driver::tools;
+@@ -53,6 +53,9 @@ using namespace clang::driver::tools;
  using namespace clang;
  using namespace llvm::opt;
  
--void tools::handleTargetFeaturesGroup(const ArgList &Args,
 +static void AddRunTimeLibs(const ToolChain &TC, const Driver &D,
 +                           ArgStringList &CmdArgs, const ArgList &Args);
 +
-+static void handleTargetFeaturesGroup(const ArgList &Args,
+ void tools::handleTargetFeaturesGroup(const ArgList &Args,
                                        std::vector<StringRef> &Features,
                                        OptSpecifier Group) {
-   for (const Arg *A : Args.filtered(Group)) {
 @@ -7568,10 +7571,9 @@ void solaris::Linker::ConstructJob(Compilation &C, const JobAction &JA,
    if (!Args.hasArg(options::OPT_nostdlib, options::OPT_nodefaultlibs)) {
      if (getToolChain().getDriver().CCCIsCXX())
